@@ -29,6 +29,12 @@ uniform Light light[NUM_LIGHTS];
 
 void main()
 {
+	vec4 diffColor = texture(material.diffuseTexture, retTexCoord);
+	if (diffColor.a == 0)
+	{
+		discard;
+	}
+
 	vec4 finalColor = vec4(0);
 	for (int i = 0; i < NUM_LIGHTS; i++)
 	{
@@ -41,12 +47,12 @@ void main()
 	float specularStrength = pow(max(dot(refl, retViewDirection), 0.0f), material.specularStrength);
 	
 
-	vec3 ambient = texture(material.diffuseTexture, retTexCoord).rgb * light[i].ambientColor / NUM_LIGHTS;
-	vec3 lambertian = lambertianStrength * texture(material.diffuseTexture, retTexCoord).rgb * light[i].diffuseColor;
+	vec3 ambient = diffColor.rgb * light[i].ambientColor / NUM_LIGHTS;
+	vec3 lambertian = lambertianStrength * diffColor.rgb * light[i].diffuseColor;
 	vec3 specular = specularStrength * texture(material.specularTexture, retTexCoord).rgb * light[i].specularColor;
 	finalColor += vec4(ambient + lambertian + specular, 1.0f);
 	
 	}
 
-	FragColor = finalColor;
+	FragColor = vec4(finalColor.rgb, diffColor.a);
 }
