@@ -32,10 +32,16 @@ void GameController::RunGame() {
     shaderDiffuse = Shader();
     shaderDiffuse.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
 
-    meshLight = new Mesh();
-    meshLight->Create(&shaderColor);
-    meshLight->SetPosition({ 0.5f, 0.0f, -0.5f });
-    meshLight->SetScale({ 0.1f, 0.1f, 0.1f });
+    for (int i = 0; i < 4; i++)
+    {
+        Mesh* light = new Mesh();
+        light->Create(&shaderColor);
+        light->SetPosition({ 1.0f, 0.0f, -0.35f + (float)i * 0.2f });
+        light->SetLightDirection(glm::normalize(glm::vec3({ 0.0f, 0.0f, -0.35f + (float)i * 0.2f }) - light->GetPosition()));
+        light->SetColor({ glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f) });
+        light->SetScale({ 0.1f, 0.1f, 0.1f });
+        lights.push_back(light);
+    }
 
     for (int row = 0; row < 10; row++)
     {
@@ -43,11 +49,9 @@ void GameController::RunGame() {
         {
             Mesh* box = new Mesh();
             box->Create(&shaderDiffuse);
-            box->SetLightColor({ 1.0f, 1.0f, 1.0f });
-            box->SetLightPosition(meshLight->GetPosition());
             box->SetCameraPosition(camera.GetPosition());
             box->SetScale({ 0.1f, 0.1f, 0.1f });
-            box->SetPosition({ 0.0f, -0.5f + (float)row / 10.0f, -0.2f + (float)col / 10.0f });
+            box->SetPosition({ 0.0f, -0.5f + row * 0.1f, -0.5f + col * 0.1f });
             meshBoxes.push_back(box);
         }
         
@@ -62,10 +66,14 @@ void GameController::RunGame() {
 #pragma endregion
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        meshLight->Render(camera.GetProjection() * camera.GetView());
-
+        for (auto light : lights)
+        {
+            light->Render(camera.GetProjection() * camera.GetView());
+        }
+        glm::vec3 rotationSpeed = { 0.0f, 0.005f, 0.0f };
         for (auto box : meshBoxes)
         {
+            box->SetRotation(box->GetRotation() + rotationSpeed);
             box->Render(camera.GetProjection() * camera.GetView());
         }
         glfwSwapBuffers(win);
@@ -74,12 +82,12 @@ void GameController::RunGame() {
     while (glfwGetKey(win, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
         glfwWindowShouldClose(win) == 0);
 
-    meshLight->Cleanup();
-    for (auto box : meshBoxes)
+    for (auto light : lights)
     {
-        box->Cleanup();
-        delete box;
+        light->Cleanup();
+        delete light;
     }
+    lights.clear();
     meshBoxes.clear();
     shaderDiffuse.Cleanup();
     shaderColor.Cleanup();
