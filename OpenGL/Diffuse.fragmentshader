@@ -49,6 +49,7 @@ void main()
 	float specularStrength = pow(max(dot(refl, retViewDirection), 0.0f), material.specularStrength);
 	float distance = length(light.position - retFragPos);
 	float att = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+	att *= 1 - pow(clamp(a / d, 0.0f, 1.0f), light.falloff); //spotlight falloff
 
 	vec3 ambient = texture(material.diffuseTexture, retTexCoord).rgb * light.ambientColor * att;
 	vec3 lambertian = lambertianStrength * texture(material.diffuseTexture, retTexCoord).rgb * light.diffuseColor * att;
