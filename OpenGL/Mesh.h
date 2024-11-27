@@ -23,7 +23,7 @@ public:
 	glm::vec3 GetLightDirection() { return lightDirection; }
 	void SetCameraPosition(glm::vec3 _cameraPosition) { cameraPosition = _cameraPosition; }
 
-	void Create(Shader* _shader);
+	void Create(Shader* _shader, std::string _file);
 	void Cleanup();
 	void CalculateTransform();
 	void Render(glm::mat4 _pv);

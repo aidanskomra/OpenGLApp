@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "GameController.h"
+#include <OBJ_Loader.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/ext.hpp>
@@ -20,66 +21,43 @@ Mesh::~Mesh()
 	texture2.Cleanup();
 }
 
-void Mesh::Create(Shader* _shader)
+void Mesh::Create(Shader* _shader, std::string _file)
 {
-	shader = _shader;
-	texture = Texture();
-	texture.LoadTexture("../Assets/Textures/MetalFrameWood.jpg");
+    shader = _shader;
+    objl::Loader loader;
+    M_ASSERT(loader.LoadFile(_file) == true, "Failed to load mesh");
 
-	texture2 = Texture();
-	texture2.LoadTexture("../Assets/Textures/MetalFrame.jpg");
+    for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++)
+    {
+        objl::Mesh curMesh = loader.LoadedMeshes[i];
+        for (unsigned int j = 0; j < curMesh.Vertices.size(); j++)
+        {
+            vertexData.push_back(curMesh.Vertices[j].Position.X);
+            vertexData.push_back(curMesh.Vertices[j].Position.Y);
+            vertexData.push_back(curMesh.Vertices[j].Position.Z);
+            vertexData.push_back(curMesh.Vertices[j].Normal.X);
+            vertexData.push_back(curMesh.Vertices[j].Normal.Y);
+            vertexData.push_back(curMesh.Vertices[j].Normal.Z);
+            vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.X);
+            vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.Y);
+        }
+    }
 
-	vertexData = {
-        /* Position */ /* Normals */ /* Texture Coords */
--0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
--0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
--0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
--0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
--0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
--0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
--0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
--0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
--0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
--0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
--0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
--0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
--0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
--0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
--0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
--0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
--0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
--0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+    std::string diffuseMap = loader.LoadedMaterials[0].map_Kd;
+    const size_t last_slash_idx = diffuseMap.find_last_of("\\/");
+    if (std::string::npos != last_slash_idx)
+    {
+        diffuseMap.erase(0, last_slash_idx + 1);
+    }
+    texture = Texture();
+    texture.LoadTexture("../Assets/Textures/" + diffuseMap);
 
+    texture2 = Texture();
+    texture2.LoadTexture("../Assets/Textures/" + diffuseMap);
 
-	};
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
-
-	/*indexData = {
-		2, 0, 3, 2, 1, 0
-	};
-	glGenBuffers(1, &indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(float), indexData.data(), GL_STATIC_DRAW);*/
 }
 
 void Mesh::Cleanup()
@@ -148,6 +126,7 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
 
 void Mesh::BindAttributes()
 {
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glEnableVertexAttribArray(shader->GetAttrVertices());
     glVertexAttribPointer(
         shader->GetAttrVertices(),
@@ -157,7 +136,7 @@ void Mesh::BindAttributes()
         8 * sizeof(float),
         (void*)0
     );
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+   
 
 #pragma region 3rd attribute buffer: normals
     glEnableVertexAttribArray(shader->GetAttrNormals());

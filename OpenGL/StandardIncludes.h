@@ -1,11 +1,10 @@
 #ifndef STANDARD_INCLUDES_H
 #define STANDARD_INCLUDES_H
 
-
-
 #include <vector>
 #include <string>
 #include <fstream>
+#include <map>
 
 #define USE_TOOL_WINDOW
 
@@ -21,6 +20,8 @@ if (!(_cond)) { OutputDebugStringA(_msg); std::abort(); glfwTerminate(); }
 #define M_PI 3.14159265358979323846
 #endif
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

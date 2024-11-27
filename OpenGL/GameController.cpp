@@ -4,6 +4,7 @@
 #ifndef USE_TOOL_WINDOW
 #include "ToolWindow1.h"
 #endif
+#include "Font.h"
 
 void GameController::Initialize()
 {
@@ -12,10 +13,12 @@ void GameController::Initialize()
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     srand(time(0));
 
     camera = Camera(WindowController::GetInstance().GetResolution());
-    camera.LookAt({ 1, 1, 1 }, { 0, 0, 0 }, { 0, 1, 0 });
+    camera.LookAt({ 5, 5, 5 }, { 0, 0, 0 }, { 0, 1, 0 });
 }
 void GameController::RunGame() {
 #ifdef USE_TOOL_WINDIOW
@@ -28,11 +31,30 @@ void GameController::RunGame() {
     
     shaderColor = Shader();
     shaderColor.LoadShaders("Color.vertexshader", "Color.fragmentshader");
-    
     shaderDiffuse = Shader();
     shaderDiffuse.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
+    shaderFont = Shader();
+    shaderFont.LoadShaders("Font.vertexshader", "Font.fragmentshader");
 
-    for (int i = 0; i < 4; i++)
+    Mesh* light = new Mesh();
+    light->Create(&shaderColor, "../Assets/Models/Sphere.obj");
+    light->SetPosition({ 3.0f, 1.0f, 0.0f });
+    light->SetColor({ 1.0f, 1.0f, 1.0f });
+    light->SetScale({ 0.1f, 0.1f, 0.1f });
+    lights.push_back(light);
+
+    Mesh* box = new Mesh();
+    box->Create(&shaderDiffuse, "../Assets/Models/Suzanne.obj");
+    box->SetCameraPosition(camera.GetPosition());
+    box->SetScale({ 1.0f, 1.0f, 1.0f });
+    box->SetPosition({ 0.0f, 0.0f, 0.0f });
+    meshBoxes.push_back(box);
+
+    Font* arialFont = new Font();
+    arialFont->Create(&shaderFont, "../Assets/Fonts/arial.ttf", 100);
+
+#pragma region Multiple Lights and Multiple Meshes (Commented Out)
+  /*  for (int i = 0; i < 4; i++)
     {
         Mesh* light = new Mesh();
         light->Create(&shaderColor);
@@ -55,7 +77,9 @@ void GameController::RunGame() {
             meshBoxes.push_back(box);
         }
         
-    }
+    }*/
+#pragma endregion
+
 
     GLFWwindow* win = WindowController::GetInstance().getWindow();
     do {
@@ -76,6 +100,8 @@ void GameController::RunGame() {
             box->SetRotation(box->GetRotation() + rotationSpeed);
             box->Render(camera.GetProjection() * camera.GetView());
         }
+
+        arialFont->RenderText("Hello World", 10, 500, 0.5f, { 1.0f, 1.0f, 0.0f });
         glfwSwapBuffers(win);
         glfwPollEvents();
     } 
@@ -88,7 +114,14 @@ void GameController::RunGame() {
         delete light;
     }
     lights.clear();
+    for (auto box : meshBoxes)
+    {
+        box->Cleanup();
+        delete box;
+    }
     meshBoxes.clear();
+
+    shaderFont.Cleanup();
     shaderDiffuse.Cleanup();
     shaderColor.Cleanup();
 }
