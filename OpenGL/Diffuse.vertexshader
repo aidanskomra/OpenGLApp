@@ -1,18 +1,18 @@
 #version 330
 
-
-in vec3 vertices;
-in vec3 normals;
-in vec2 texCoords;
+in vec3 vertices;       // Vertices of the model
+in vec3 normals;        // Normals for the Vertices
+in vec2 texCoords;      // Input texture coordinates
 
 uniform vec3 CameraPosition;
 uniform mat4 World;
 uniform mat4 WVP;
 
-out vec3 retFragPos;
-out vec3 retNormal;
-out vec2 retTexCoord;
-out vec3 retViewDirection;
+out vec3 retFragPos;        // Output the posiiton
+out vec3 retNormal;         // Output the normal
+out vec2 retTexCoord;       // Output the texture coordinates
+out vec3 retViewDirection;  // Output the View Direction
+out mat4 retWorld;          // Output the World Position (no scale)
 
 void main() {
     gl_Position = WVP * vec4(vertices, 1.0);
@@ -20,4 +20,5 @@ void main() {
     retTexCoord = texCoords;
     retFragPos = vec3(World * vec4(vertices, 1.0f));
     retViewDirection = normalize(CameraPosition - retFragPos);
+    retWorld = transpose(inverse(World));
 }

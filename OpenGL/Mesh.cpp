@@ -17,8 +17,8 @@ Mesh::~Mesh()
 		glDeleteBuffers(1, &indexBuffer);
 	}
 
-	texture.Cleanup();
-	texture2.Cleanup();
+	textureDiffuse.Cleanup();
+	textureSpecular.Cleanup();
 }
 
 void Mesh::Create(Shader* _shader, std::string _file)
@@ -49,11 +49,31 @@ void Mesh::Create(Shader* _shader, std::string _file)
     {
         diffuseMap.erase(0, last_slash_idx + 1);
     }
-    texture = Texture();
-    texture.LoadTexture("../Assets/Textures/" + diffuseMap);
 
-    texture2 = Texture();
-    texture2.LoadTexture("../Assets/Textures/" + diffuseMap);
+#pragma region Texture Loading
+    textureDiffuse = Texture();
+    if (loader.LoadedMaterials[0].map_Kd != "")
+    {
+        textureDiffuse.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Kd));
+    }
+    else
+    {
+        textureDiffuse.LoadTexture("../Assets/Textures/Pattern.png");
+    }
+
+    textureSpecular = Texture();
+    if (loader.LoadedMaterials[0].map_Ks != "")
+    {
+        textureSpecular.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Ks));
+    }
+
+    textureNormal = Texture();
+    if (loader.LoadedMaterials[0].map_bump != "")
+    {
+        enableNormalMaps = true;
+        textureNormal.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_bump));
+    }
+#pragma endregion
 
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -64,8 +84,8 @@ void Mesh::Cleanup()
 {
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteBuffers(1, &indexBuffer);
-	texture.Cleanup();
-	texture2.Cleanup();
+	textureDiffuse.Cleanup();
+	textureSpecular.Cleanup();
 
 	vertexBuffer = 0;
 	indexBuffer = 0;
@@ -100,6 +120,7 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
     shader->SetMat4("World", world);
     shader->SetMat4("WVP", _pv * world);
     shader->SetVec3("CameraPosition", cameraPosition);
+    shader->SetInt("EnableNormalMaps", enableNormalMaps);
 
     std::vector<Mesh*>& lights = GameController::GetInstance().GetLights();
     for (int i = 0; i < lights.size(); i++)
@@ -120,8 +141,9 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
     }
 
     shader->SetFloat("material.specularStrength", 8);
-    shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, texture.GetTexture());
-    shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, texture2.GetTexture());
+    shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, textureDiffuse.GetTexture());
+    shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, textureSpecular.GetTexture());
+    shader->SetTextureSampler("material.normalTexture", GL_TEXTURE2, 2, textureNormal.GetTexture());
 }
 
 void Mesh::BindAttributes()
@@ -159,4 +181,14 @@ std::string Mesh::Concat(const std::string& _s1, int _index, const std::string& 
 {
     std::string index = std::to_string(_index);
     return (_s1 + index + _s2);
+}
+
+std::string Mesh::RemoveFolder(std::string& _map)
+{
+    const size_t last_slash_idx = _map.find_last_of("\\/");
+    if (std::string::npos != last_slash_idx)
+    {
+        _map.erase(0, last_slash_idx + 1);
+    }
+    return _map;
 }

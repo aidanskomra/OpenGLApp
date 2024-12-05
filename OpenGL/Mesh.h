@@ -32,15 +32,18 @@ private:
 	void SetShaderVariables(glm::mat4 _pv);
 	void BindAttributes();
 	std::string Concat(const std::string& _s1, int _index, const std::string& _s2);
+	std::string RemoveFolder(std::string& _map);
 
 private:
 	Shader* shader = nullptr;
-	Texture texture {};
-	Texture texture2 {};
+	Texture textureDiffuse {};
+	Texture textureSpecular {};
+	Texture textureNormal{};
 	GLuint vertexBuffer = 0;
 	GLuint indexBuffer = 0;
 	std::vector<GLfloat> vertexData;
 	std::vector<GLubyte> indexData;
+	bool enableNormalMaps = false;
 
 	glm::mat4 world = glm::mat4(1);
 	glm::vec3 position { 0.0f, 0.0f, 0.0f };

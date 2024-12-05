@@ -1,9 +1,10 @@
 #version 330
 
-in vec3 retFragPos;
-in vec3 retNormal;
-in vec2 retTexCoord;
-in vec3 retViewDirection;
+in vec3 retFragPos;			// Fragment position
+in vec3 retNormal;			// Fragment normal
+in vec2 retTexCoord;		// Fragment texture coordinates
+in vec3 retViewDirection;	// Fragment View Direction
+in mat4 retWorld;			// Fragment World Position (no scale)
 
 out vec4 FragColor;
 
@@ -12,6 +13,7 @@ struct Material
 	float specularStrength;
 	sampler2D diffuseTexture;
 	sampler2D specularTexture;
+	sampler2D normalTexture;
 };
 
 struct Light {
@@ -26,6 +28,7 @@ struct Light {
 uniform Material material;
 #define NUM_LIGHTS 1
 uniform Light light[NUM_LIGHTS];
+uniform bool EnableNormalMaps = false;
 
 void main()
 {
@@ -40,10 +43,17 @@ void main()
 	{
 	// Calculate lambertian strength
 	vec3 lightDir = normalize(light[i].position - retFragPos);
-	float lambertianStrength = dot(lightDir, retNormal);
+	vec3 normal = retNormal;
+	if (EnableNormalMaps == true)
+	{
+		normal = texture(material.normalTexture, retTexCoord).rgb;
+		normal = normal * 2.0 - 1.0;
+		normal = normalize(mat3(retWorld) * normal);
+	}
+	float lambertianStrength = dot(lightDir, normal);
 
 	// Calculate specular strength
-	vec3 refl = reflect(-lightDir, retNormal);
+	vec3 refl = reflect(-lightDir, normal);
 	float specularStrength = pow(max(dot(refl, retViewDirection), 0.0f), material.specularStrength);
 	
 

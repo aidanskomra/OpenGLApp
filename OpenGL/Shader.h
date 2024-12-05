@@ -16,7 +16,6 @@ public:
 	GLuint GetAttrColors() { return attrColors; }
 	GLuint GetAttrNormals() { return attrNormals; }
 	GLuint GetAttrTexCoords() { return attrTexCoords; }
-	GLuint GetAttrTexOffset() { return attrTexOffset; }
 	GLuint GetAttrWVP() { return attrWVP; }
 
 
@@ -26,6 +25,7 @@ public:
 	void SetMat4(const char* _name, glm::mat4 _value);
 	void SetFloat(const char* _name, float _value);
 	void SetTextureSampler(const char* _name, GLuint _texUint, int _texUintId, int _value);
+	void SetInt(const char* _name, int _value);
 
 public:
 
@@ -33,11 +33,12 @@ public:
 	GLuint LoadShaderFile(const char* _filePath, GLenum _type);
 	void LoadAttributes();
 	void EvaluateShader(int _infoLength, GLuint _id);
+
+
 	GLuint programID = 0;
 	GLuint attrVertices = 0;
 	GLuint attrColors = 0;
 	GLuint attrTexCoords = 0;
-	GLuint attrTexOffset = 0;
 	GLuint attrNormals = 0;
 	GLuint attrWVP = 0;
 	GLint result = GL_FALSE;

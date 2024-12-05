@@ -26,7 +26,7 @@ private:
 	Shader shaderFont = {};
 	Shader shaderSkybox = {};
 
-	std::vector<Mesh*> meshBoxes;
+	std::vector<Mesh*> meshes;
 	std::vector<Mesh*> lights;
 	Skybox* skybox = nullptr;
 };
