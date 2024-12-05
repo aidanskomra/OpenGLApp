@@ -11,6 +11,7 @@ public:
 	GLuint GetTexture() { return texture; }
 
 	void LoadTexture(std::string _filename);
+	void LoadCubemap(std::vector<std::string> _faces);
 	void Cleanup();
 
 private:

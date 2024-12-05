@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Skybox.h"
 
 class GameController : public Singleton<GameController>
 {
@@ -23,8 +24,10 @@ private:
 	Shader shaderColor = {};
 	Shader shaderDiffuse = {};
 	Shader shaderFont = {};
+	Shader shaderSkybox = {};
 
 	std::vector<Mesh*> meshBoxes;
 	std::vector<Mesh*> lights;
+	Skybox* skybox = nullptr;
 };
 #endif

@@ -16,11 +16,10 @@ void GameController::Initialize()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
     srand(time(0));
 
     camera = Camera(WindowController::GetInstance().GetResolution());
-    camera.LookAt({ 5, 5, 5 }, { 0, 0, 0 }, { 0, 1, 0 });
+    camera.LookAt({ 0, 0, 0 }, { 0, 0, 0 }, { 0, 1, 0 });
 }
 void GameController::RunGame() {
 #ifdef USE_TOOL_WINDIOW
@@ -37,10 +36,12 @@ void GameController::RunGame() {
     shaderDiffuse.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
     shaderFont = Shader();
     shaderFont.LoadShaders("Font.vertexshader", "Font.fragmentshader");
+    shaderSkybox = Shader();
+    shaderSkybox.LoadShaders("Skybox.vertexshader", "Skybox.fragmentshader");
 
     Mesh* light = new Mesh();
     light->Create(&shaderColor, "../Assets/Models/Sphere.obj");
-    light->SetPosition({ 3.0f, 1.0f, 0.0f });
+    light->SetPosition({ 5.0f, 0.0f, 0.0f });
     light->SetColor({ 1.0f, 1.0f, 1.0f });
     light->SetScale({ 0.1f, 0.1f, 0.1f });
     lights.push_back(light);
@@ -49,22 +50,26 @@ void GameController::RunGame() {
     Suzanne->Create(&shaderDiffuse, "../Assets/Models/Suzanne.obj");
     Suzanne->SetCameraPosition(camera.GetPosition());
     Suzanne->SetScale({ 1.0f, 1.0f, 1.0f });
-    Suzanne->SetPosition({ 0.0f, 0.0f, 0.0f });
+    Suzanne->SetPosition({ 5.0f, 0.0f, 0.0f });
     meshBoxes.push_back(Suzanne);
 
-    Mesh* plane = new Mesh();
-    plane->Create(&shaderDiffuse, "../Assets/Models/Plane.obj");
-    plane->SetCameraPosition(camera.GetPosition());
-    plane->SetScale({ 1.0f, 1.0f, 1.0f });
-    plane->SetPosition({ -1.0f, -1.0f, -1.0f });
-    meshBoxes.push_back(plane);
+    Mesh* box = new Mesh();
+    box->Create(&shaderDiffuse, "../Assets/Models/Cube.obj");
+    box->SetCameraPosition(camera.GetPosition());
+    box->SetScale({ 1.0f, 1.0f, 1.0f });
+    box->SetPosition({ 5.0f, 0.0f, 0.0f });
+    meshBoxes.push_back(box);
 
-    Mesh* windowMesh = new Mesh();
-    windowMesh->Create(&shaderDiffuse, "../Assets/Models/Window.obj");
-    windowMesh->SetCameraPosition(camera.GetPosition());
-    windowMesh->SetScale({ 1.0f, 1.0f, 1.0f });
-    windowMesh->SetPosition({ 0.0f, 0.0f, 0.0f });
-    meshBoxes.push_back(windowMesh);
+    #pragma region Skybox Setup
+    skybox = new Skybox();
+    skybox->Create(&shaderSkybox, "../Assets/Models/Skybox.obj",
+        { "../Assets/Textures/Skybox/right.jpg",
+          "../Assets/Textures/Skybox/left.jpg",
+          "../Assets/Textures/Skybox/top.jpg",
+          "../Assets/Textures/Skybox/bottom.jpg",
+          "../Assets/Textures/Skybox/front.jpg",
+          "../Assets/Textures/Skybox/back.jpg" });
+    #pragma endregion
 
     Font* arialFont = new Font();
     arialFont->Create(&shaderFont, "../Assets/Fonts/arial.ttf", 100);
@@ -106,6 +111,10 @@ void GameController::RunGame() {
 #pragma endregion
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        camera.Rotate();
+        glm::mat4 view = glm::mat4(glm::mat3(camera.GetView()));
+        skybox->Render(camera.GetProjection() * view);
         for (auto light : lights)
         {
             light->Render(camera.GetProjection() * camera.GetView());

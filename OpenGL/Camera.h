@@ -21,11 +21,17 @@ public:
 	glm::mat4 GetProjection() { return projection; }
 	glm::mat4 GetView() { return view; }
 	glm::vec3 GetPosition() { return position; }
+
+	void Rotate();
+
 private:
 	//Members
 	glm::mat4 projection = {};
 	glm::mat4 view = {};
 	glm::vec3 position = {};
+	glm::vec3 lookAt = {};
+	glm::vec3 rotation = {};
+	float angle = 0.0f;
 };
 
 #endif //CAMERA_H
