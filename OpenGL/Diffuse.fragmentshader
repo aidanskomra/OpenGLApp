@@ -4,7 +4,7 @@ in vec3 retFragPos;			// Fragment position
 in vec3 retNormal;			// Fragment normal
 in vec2 retTexCoord;		// Fragment texture coordinates
 in vec3 retViewDirection;	// Fragment View Direction
-in mat4 retWorld;			// Fragment World Position (no scale)
+in mat3 retTBN;             // Output the Tangent Bitangent Normal
 
 out vec4 FragColor;
 
@@ -48,7 +48,7 @@ void main()
 	{
 		normal = texture(material.normalTexture, retTexCoord).rgb;
 		normal = normal * 2.0 - 1.0;
-		normal = normalize(mat3(retWorld) * normal);
+		normal = normalize(retTBN * normal);
 	}
 	float lambertianStrength = dot(lightDir, normal);
 

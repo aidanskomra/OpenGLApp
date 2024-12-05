@@ -66,6 +66,8 @@ void Shader::LoadAttributes()
 	attrVertices = glGetAttribLocation(programID, "vertices");
 	attrColors = glGetAttribLocation(programID, "colors");
 	attrNormals = glGetAttribLocation(programID, "normals");
+	attrTangents = glGetAttribLocation(programID, "tangents");
+	attrBitangents = glGetAttribLocation(programID, "bitangents");
 	attrTexCoords = glGetAttribLocation(programID, "texCoords");
 	attrWVP = glGetUniformLocation(programID, "WVP");
 }

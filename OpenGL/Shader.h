@@ -15,6 +15,8 @@ public:
 	GLuint GetAttrVertices() { return attrVertices; }
 	GLuint GetAttrColors() { return attrColors; }
 	GLuint GetAttrNormals() { return attrNormals; }
+	GLuint GetAttrTangents() { return attrTangents; }
+	GLuint GetAttrBitangents() { return attrBitangents; }
 	GLuint GetAttrTexCoords() { return attrTexCoords; }
 	GLuint GetAttrWVP() { return attrWVP; }
 
@@ -35,11 +37,13 @@ public:
 	void EvaluateShader(int _infoLength, GLuint _id);
 
 
-	GLuint programID = 0;
-	GLuint attrVertices = 0;
-	GLuint attrColors = 0;
-	GLuint attrTexCoords = 0;
-	GLuint attrNormals = 0;
+	GLuint programID = 0; // ID of out shader program
+	GLuint attrVertices = 0; // Handle for the attribute vertex buffer
+	GLuint attrColors = 0; // Handle for the attribute Color
+	GLuint attrTangents = 0; // Handle for the attribute Tangents
+	GLuint attrBitangents = 0; // Handle for the attribute Bitangents
+	GLuint attrTexCoords = 0; // Handle for the attribute Tex Coords
+	GLuint attrNormals = 0; // Handle for the attribute Normal
 	GLuint attrWVP = 0;
 	GLint result = GL_FALSE;
 	int infoLogLength = 0;

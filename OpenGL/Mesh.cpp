@@ -24,12 +24,29 @@ Mesh::~Mesh()
 void Mesh::Create(Shader* _shader, std::string _file)
 {
     shader = _shader;
+
+    #pragma region Mesh Loading
     objl::Loader loader;
     M_ASSERT(loader.LoadFile(_file) == true, "Failed to load mesh");
 
     for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++)
     {
         objl::Mesh curMesh = loader.LoadedMeshes[i];
+        std::vector<objl::Vector3> tangents;
+        std::vector<objl::Vector3> bitangents;
+        std::vector<objl::Vertex> triangle;
+        objl::Vector3 tangent;
+        objl::Vector3 bitangent;
+        for (unsigned int j = 0; j < curMesh.Vertices.size(); j += 3)
+        {
+            triangle.clear();
+            triangle.push_back(curMesh.Vertices[j]);
+            triangle.push_back(curMesh.Vertices[j + 1]);
+            triangle.push_back(curMesh.Vertices[j + 2]);
+            CalculateTangents(triangle, tangent, bitangent);
+            tangents.push_back(tangent);
+            bitangents.push_back(bitangent);
+        }
         for (unsigned int j = 0; j < curMesh.Vertices.size(); j++)
         {
             vertexData.push_back(curMesh.Vertices[j].Position.X);
@@ -40,6 +57,17 @@ void Mesh::Create(Shader* _shader, std::string _file)
             vertexData.push_back(curMesh.Vertices[j].Normal.Z);
             vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.X);
             vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.Y);
+
+            if (loader.LoadedMaterials[0].map_bump != "")
+            {
+                int index = j / 3;
+                vertexData.push_back(tangents[index].X);
+                vertexData.push_back(tangents[index].Y);
+                vertexData.push_back(tangents[index].Z);
+                vertexData.push_back(bitangents[index].X);
+                vertexData.push_back(bitangents[index].Y);
+                vertexData.push_back(bitangents[index].Z);
+            }
         }
     }
 
@@ -75,6 +103,12 @@ void Mesh::Create(Shader* _shader, std::string _file)
     }
 #pragma endregion
 
+    vertexStride = 8;
+    if (enableNormalMaps)
+    {
+        vertexStride += 6;
+    }
+
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
@@ -109,7 +143,7 @@ void Mesh::Render(glm::mat4 _pv)
     SetShaderVariables(_pv);
     BindAttributes();
 
-    glDrawArrays(GL_TRIANGLES, 0, vertexData.size() / 8);
+    glDrawArrays(GL_TRIANGLES, 0, vertexData.size() / vertexStride);
     glDisableVertexAttribArray(shader->GetAttrVertices());
     glDisableVertexAttribArray(shader->GetAttrNormals());
     glDisableVertexAttribArray(shader->GetAttrTexCoords());
@@ -155,7 +189,7 @@ void Mesh::BindAttributes()
         3,
         GL_FLOAT,
         GL_FALSE,
-        8 * sizeof(float),
+        vertexStride * sizeof(float),
         (void*)0
     );
    
@@ -164,7 +198,7 @@ void Mesh::BindAttributes()
     glEnableVertexAttribArray(shader->GetAttrNormals());
     glVertexAttribPointer(shader->GetAttrNormals(),
         3, GL_FLOAT, GL_FALSE,
-        8 * sizeof(float),
+        vertexStride * sizeof(float),
         (void*)(3 * sizeof(float))
     );
 #pragma endregion
@@ -172,9 +206,29 @@ void Mesh::BindAttributes()
     glEnableVertexAttribArray(shader->GetAttrTexCoords());
     glVertexAttribPointer(shader->GetAttrTexCoords(),
         2, GL_FLOAT, GL_FALSE,
-        8 * sizeof(float),
+        vertexStride * sizeof(float),
         (void*)(6 * sizeof(float))
     );
+
+#pragma region BindNormalMapData
+    if (enableNormalMaps)
+    {
+        // 4th attribute buffer: tangent
+        glEnableVertexAttribArray(shader->GetAttrTangents());
+        glVertexAttribPointer(shader->GetAttrTangents(), // the attribute we want to configure
+            3, GL_FLOAT, GL_FALSE,          //size, type, normalized?,
+            vertexStride * sizeof(float),   // stride floats per vertex definition
+            (void*)(8 * sizeof(float))); // array buffer offset
+
+        // 5th attribute buffer: tangent
+        glEnableVertexAttribArray(shader->GetAttrBitangents());
+        glVertexAttribPointer(shader->GetAttrBitangents(), // the attribute we want to configure
+            3, GL_FLOAT, GL_FALSE,          //size, type, normalized?,
+            vertexStride * sizeof(float),   // stride floats per vertex definition
+            (void*)(11 * sizeof(float))); // array buffer offset
+
+    }
+#pragma endregion
 }
 
 std::string Mesh::Concat(const std::string& _s1, int _index, const std::string& _s2)
@@ -191,4 +245,23 @@ std::string Mesh::RemoveFolder(std::string& _map)
         _map.erase(0, last_slash_idx + 1);
     }
     return _map;
+}
+
+void Mesh::CalculateTangents(std::vector<objl::Vertex> _vertices, objl::Vector3& _tangent, objl::Vector3& _bitangent)
+{
+    // calculate tangent/bitangent vectors of both triangles
+    objl::Vector3 edge1 = _vertices[1].Position - _vertices[0].Position;
+    objl::Vector3 edge2 = _vertices[2].Position - _vertices[0].Position;
+    objl::Vector2 deltaUV1 = _vertices[1].TextureCoordinate - _vertices[0].TextureCoordinate;
+    objl::Vector2 deltaUV2 = _vertices[2].TextureCoordinate - _vertices[0].TextureCoordinate;
+
+    float f = 1.0f / (deltaUV1.X * deltaUV2.Y - deltaUV2.X * deltaUV1.Y);
+
+    _tangent.X = f * (deltaUV2.Y * edge1.X - deltaUV1.Y * edge2.X);
+    _tangent.Y = f * (deltaUV2.Y * edge1.Y - deltaUV1.Y * edge2.Y);
+    _tangent.Z = f * (deltaUV2.Y * edge1.Z - deltaUV1.Y * edge2.Z);
+
+    _bitangent.X = f * (-deltaUV2.X * edge1.X - deltaUV1.X * edge2.X);
+    _bitangent.Y = f * (-deltaUV2.X * edge1.Y - deltaUV1.X * edge2.Y);
+    _bitangent.Z = f * (-deltaUV2.X * edge1.Z - deltaUV1.X * edge2.Z);
 }

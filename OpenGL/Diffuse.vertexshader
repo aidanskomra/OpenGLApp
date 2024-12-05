@@ -3,6 +3,8 @@
 in vec3 vertices;       // Vertices of the model
 in vec3 normals;        // Normals for the Vertices
 in vec2 texCoords;      // Input texture coordinates
+in vec3 tangents;       // tangents for the Normals
+in vec3 bitangents;     // bitangents for the Normals
 
 uniform vec3 CameraPosition;
 uniform mat4 World;
@@ -12,7 +14,7 @@ out vec3 retFragPos;        // Output the posiiton
 out vec3 retNormal;         // Output the normal
 out vec2 retTexCoord;       // Output the texture coordinates
 out vec3 retViewDirection;  // Output the View Direction
-out mat4 retWorld;          // Output the World Position (no scale)
+out mat3 retTBN;            // Output the Tangent Bitangent Normal
 
 void main() {
     gl_Position = WVP * vec4(vertices, 1.0);
@@ -20,5 +22,9 @@ void main() {
     retTexCoord = texCoords;
     retFragPos = vec3(World * vec4(vertices, 1.0f));
     retViewDirection = normalize(CameraPosition - retFragPos);
-    retWorld = transpose(inverse(World));
+
+    vec3 T = normalize(vec3(World * vec4(tangents, 0.0)));
+    vec3 B = normalize(vec3(World * vec4(bitangents, 0.0)));
+    vec3 N = normalize(vec3(World * vec4(normals, 0.0)));
+    retTBN = mat3(T, B, N);
 }

@@ -44,18 +44,30 @@ void GameController::RunGame() {
     #pragma region Light
     Mesh* light = new Mesh();
     light->Create(&shaderColor, "../Assets/Models/Sphere.obj");
-    light->SetPosition({ 0.0f, 0.1f, 1.0f });
+    light->SetPosition({ 0.0f, 0.8f, 1.0f });
     light->SetColor({ 1.0f, 1.0f, 1.0f });
     light->SetScale({ 0.1f, 0.1f, 0.1f });
     lights.push_back(light);
 #pragma endregion
 
-    Mesh* box = new Mesh();
+#pragma region Fighter
+    Mesh* mesh = nullptr;
+    mesh = new Mesh();
+    mesh->Create(&shaderDiffuse, "../Assets/Models/Fighter.obj");
+    mesh->SetCameraPosition(camera.GetPosition());
+    mesh->SetPosition({ 0.0f, 0.0f, 0.0f });
+    mesh->SetScale({ 0.002f, 0.002f, 0.002f });
+    meshes.push_back(mesh);
+#pragma endregion
+
+    #pragma region Brick Wall (Commented out)
+   /* Mesh* box = new Mesh();
     box->Create(&shaderDiffuse, "../Assets/Models/Wall.obj");
     box->SetCameraPosition(camera.GetPosition());
     box->SetPosition({ 0.0f, 0.0f, 0.0f });
     box->SetScale({ 1.0f, 1.0f, 1.0f });
-    meshes.push_back(box);
+    meshes.push_back(box); */
+#pragma endregion
 
     #pragma region Monkey (Commented Out)
    /* Mesh* Suzanne = new Mesh();
