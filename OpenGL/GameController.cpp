@@ -146,12 +146,45 @@ void GameController::RunGame() {
 
     GameTime::GetInstance().Initialize();
     GLFWwindow* win = WindowController::GetInstance().getWindow();
+
+    const char* effectNames[] = {
+        "None", "Grayscale", "Inversion", "Edge Detection", "Custom Effect"
+    };
+
+    bool upKeyPressed = false;
+    bool downKeyPressed = false;
+
     do {
 #pragma region Wiform (ifdef USE_TOOL_WINDOW used)
 #ifdef USE_TOOL_WINDOW
         System::Windows::Forms::Application::DoEvents();
 #endif
 #pragma endregion
+
+        if (glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS) {
+            if (!upKeyPressed) {
+                currentEffect = static_cast<PostProcessingEffect>(
+                    (static_cast<int>(currentEffect) + 1) % 5);
+                upKeyPressed = true;
+            }
+        }
+        else {
+            upKeyPressed = false;
+        }
+
+        if (glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS) {
+            if (!downKeyPressed) {
+                currentEffect = static_cast<PostProcessingEffect>(
+                    (static_cast<int>(currentEffect) - 1 + 5) % 5);
+                downKeyPressed = true;
+            }
+        }
+        else {
+            downKeyPressed = false;
+        }
+
+        glUseProgram(shaderPost.GetProgramID());
+        glUniform1i(glGetUniformLocation(shaderPost.GetProgramID(), "effectType"), static_cast<int>(currentEffect));
 
         GameTime::GetInstance().Update();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,7 +205,7 @@ void GameController::RunGame() {
         }
 
         postProcessor.End();
-        arialFont->RenderText(std::to_string(GameTime::GetInstance().Fps()), 100, 100, 0.5f, {1.0f, 1.0f, 0.0f});
+        arialFont->RenderText(effectNames[static_cast<int>(currentEffect)], 100, 100, 0.5f, { 1.0f, 1.0f, 0.0f });
 
         glfwSwapBuffers(win); // Swap the front and back buffers
         glfwPollEvents();
