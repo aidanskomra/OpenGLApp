@@ -29,5 +29,7 @@ private:
 	std::vector<Mesh*> meshes;
 	std::vector<Mesh*> lights;
 	Skybox* skybox = nullptr;
+
+	GLuint vao;
 };
 #endif

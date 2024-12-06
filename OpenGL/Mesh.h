@@ -24,7 +24,7 @@ public:
 	glm::vec3 GetLightDirection() { return lightDirection; }
 	void SetCameraPosition(glm::vec3 _cameraPosition) { cameraPosition = _cameraPosition; }
 
-	void Create(Shader* _shader, std::string _file);
+	void Create(Shader* _shader, std::string _file, int _instanceCount = 1);
 	void Cleanup();
 	void CalculateTransform();
 	void Render(glm::mat4 _pv);
@@ -43,9 +43,14 @@ private:
 	Texture textureNormal{};
 	GLuint vertexBuffer = 0;
 	GLuint indexBuffer = 0;
+	GLuint instanceBuffer = 0;
 	std::vector<GLfloat> vertexData;
 	std::vector<GLubyte> indexData;
+	std::vector<GLfloat> instanceData;
 	bool enableNormalMaps = false;
+
+	int instanceCount = 0;
+	bool enableInstancing = false;
 
 	int vertexStride = 0;
 	glm::mat4 world = glm::mat4(1);

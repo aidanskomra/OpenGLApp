@@ -1,6 +1,7 @@
 #include "GameController.h"
 #include "WindowController.h"
 #include "Mesh.h"
+#include "GameTIme.h"
 #ifndef USE_TOOL_WINDOW
 #include "ToolWindow1.h"
 #endif
@@ -18,8 +19,11 @@ void GameController::Initialize()
     glEnable(GL_CULL_FACE);
     srand(time(0));
 
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
     camera = Camera(WindowController::GetInstance().GetResolution());
-    camera.LookAt({ 2, 2, 2 }, { 0, 0, 0 }, { 0, 1, 0 });
+    camera.LookAt({ 5, 5, 5 }, { 0, 0, 0 }, { 0, 1, 0 });
 }
 void GameController::RunGame() {
 #ifdef USE_TOOL_WINDIOW
@@ -44,20 +48,21 @@ void GameController::RunGame() {
     #pragma region Light
     Mesh* light = new Mesh();
     light->Create(&shaderColor, "../Assets/Models/Sphere.obj");
-    light->SetPosition({ 0.0f, 0.8f, 1.0f });
+    light->SetPosition({ 3.0f, 0.0f, 0.0f });
     light->SetColor({ 1.0f, 1.0f, 1.0f });
     light->SetScale({ 0.1f, 0.1f, 0.1f });
     lights.push_back(light);
 #pragma endregion
-
-#pragma region Fighter
+    
     Mesh* mesh = nullptr;
-    mesh = new Mesh();
+
+    #pragma region Fighter (Commented Out)
+   /* mesh = new Mesh();
     mesh->Create(&shaderDiffuse, "../Assets/Models/Fighter.obj");
     mesh->SetCameraPosition(camera.GetPosition());
     mesh->SetPosition({ 0.0f, 0.0f, 0.0f });
     mesh->SetScale({ 0.002f, 0.002f, 0.002f });
-    meshes.push_back(mesh);
+    meshes.push_back(mesh); */
 #pragma endregion
 
     #pragma region Brick Wall (Commented out)
@@ -79,13 +84,12 @@ void GameController::RunGame() {
 #pragma endregion
 
     #pragma region Cube (Commented Out)
-    /*
-    Mesh* box = new Mesh();
-    box->Create(&shaderDiffuse, "../Assets/Models/Cube.obj");
-    box->SetCameraPosition(camera.GetPosition());
-    box->SetScale({ 1.0f, 1.0f, 1.0f });
-    box->SetPosition({ 5.0f, 0.0f, 0.0f });
-    meshBoxes.push_back(box); */
+        Mesh* box = new Mesh();
+        box->Create(&shaderDiffuse, "../Assets/Models/Cube.obj", 1000);
+        box->SetCameraPosition(camera.GetPosition());
+        box->SetScale({ 0.1f, 0.1f, 0.1f });
+        box->SetPosition({ 0.0f, 0.0f, 0.0f });
+        meshes.push_back(box);
 #pragma endregion
 
     #pragma region Skybox Setup (Commented Out)
@@ -131,7 +135,7 @@ void GameController::RunGame() {
     }*/
 #pragma endregion
 
-
+    GameTime::GetInstance().Initialize();
     GLFWwindow* win = WindowController::GetInstance().getWindow();
     do {
 #pragma region Wiform (ifdef USE_TOOL_WINDOW used)
@@ -140,6 +144,7 @@ void GameController::RunGame() {
 #endif
 #pragma endregion
 
+        GameTime::GetInstance().Update();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
        // camera.Rotate();
@@ -155,11 +160,14 @@ void GameController::RunGame() {
         glm::vec3 rotationSpeed = { 0.0f, 0.005f, 0.0f };
         for (auto box : meshes)
         {
-            //box->SetRotation(box->GetRotation() + rotationSpeed);
-            box->Render(camera.GetProjection() * camera.GetView());
+            for (int i = 0; i < 1000; i++)
+            {
+               // box->SetRotation(box->GetRotation() + rotationSpeed);
+                box->Render(camera.GetProjection() * camera.GetView());
+            }
         }
 
-        arialFont->RenderText("Hello World", 10, 500, 0.5f, { 1.0f, 1.0f, 0.0f });
+        arialFont->RenderText(std::to_string(GameTime::GetInstance().Fps()), 100, 100, 0.5f, {1.0f, 1.0f, 0.0f});
 
         glfwSwapBuffers(win); // Swap the front and back buffers
         glfwPollEvents();
