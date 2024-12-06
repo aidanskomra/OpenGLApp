@@ -9,14 +9,17 @@ public:
 	WindowController();
 	virtual ~WindowController();
 
+	void Create(int _width = -1, int _height = -1);
+
 	GLFWwindow* getWindow() { if (window == nullptr) { NewWindow(); } return window; }
 
 	void NewWindow();
-	Resolution GetResolution();
+	const Resolution& GetResolution() { return resolution; }
 
 private:
 	//Members
 	GLFWwindow* window;
+	Resolution resolution = { 1280, 768 };
 };
 
 #endif

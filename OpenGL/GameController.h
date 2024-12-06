@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Skybox.h"
+#include "PostProcessor.h"
 
 class GameController : public Singleton<GameController>
 {
@@ -20,11 +21,13 @@ public:
 
 private:
 	Camera camera = {};
+	PostProcessor postProcessor = {};
 
 	Shader shaderColor = {};
 	Shader shaderDiffuse = {};
 	Shader shaderFont = {};
 	Shader shaderSkybox = {};
+	Shader shaderPost = {};
 
 	std::vector<Mesh*> meshes;
 	std::vector<Mesh*> lights;

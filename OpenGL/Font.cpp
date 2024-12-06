@@ -10,6 +10,15 @@ void Font::Create(Shader* _shader, std::string _name, FT_UInt _size)
 	Initialize(_name, _size);
 }
 
+void Font::Cleanup()
+{
+	glDeleteBuffers(1, &vertexBuffer);
+	for (auto it : characters)
+	{
+		glGenTextures(1, &(it.second.textureID));
+	}
+}
+
 void Font::AllocateBuffers()
 {
 	glGenBuffers(1, &vertexBuffer);

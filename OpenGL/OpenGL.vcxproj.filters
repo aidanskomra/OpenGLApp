@@ -54,6 +54,9 @@
     <ClCompile Include="GameTIme.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PostProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Singleton.h">
@@ -95,6 +98,9 @@
     <ClInclude Include="GameTIme.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Diffuse.vertexshader">
@@ -119,6 +125,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Skybox.vertexshader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Postprocessor.vertexshader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Postprocessor.fragmentshader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

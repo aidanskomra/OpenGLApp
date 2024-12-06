@@ -12,7 +12,7 @@ void GameController::Initialize()
     GLFWwindow* window = WindowController::GetInstance().getWindow();
     M_ASSERT(glewInit() == GLEW_OK, "Failed to initialize GLEW.");
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -43,6 +43,13 @@ void GameController::RunGame() {
     shaderFont.LoadShaders("Font.vertexshader", "Font.fragmentshader");
     shaderSkybox = Shader();
     shaderSkybox.LoadShaders("Skybox.vertexshader", "Skybox.fragmentshader");
+    shaderPost = Shader();
+    shaderPost.LoadShaders("Postprocessor.vertexshader", "Postprocessor.fragmentshader");
+#pragma endregion
+
+    #pragma region Post Processes
+    postProcessor = PostProcessor();
+    postProcessor.Create(&shaderPost);
 #pragma endregion
 
     #pragma region Light
@@ -105,8 +112,10 @@ void GameController::RunGame() {
           */
     #pragma endregion
 
+    #pragma region Font Setup
     Font* arialFont = new Font();
     arialFont->Create(&shaderFont, "../Assets/Fonts/arial.ttf", 100);
+#pragma endregion
 
     #pragma region Multiple Lights and Multiple Meshes (Commented Out)
   /*  for (int i = 0; i < 4; i++)
@@ -147,9 +156,7 @@ void GameController::RunGame() {
         GameTime::GetInstance().Update();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-       // camera.Rotate();
-        //glm::mat4 view = glm::mat4(glm::mat3(camera.GetView()));
-       // skybox->Render(camera.GetProjection() * view);
+        postProcessor.Start();
 
         for (auto light : lights)
         {
@@ -157,16 +164,14 @@ void GameController::RunGame() {
         }
 
         //Note we are now using a pointer so we are not doing a shallow copy, we could also use a reference if we were not on the heap
-        glm::vec3 rotationSpeed = { 0.0f, 0.005f, 0.0f };
+        glm::vec3 rotationSpeed = { 0.0f, 1.0f, 0.0f };
         for (auto box : meshes)
         {
-            for (int i = 0; i < 1000; i++)
-            {
-               // box->SetRotation(box->GetRotation() + rotationSpeed);
-                box->Render(camera.GetProjection() * camera.GetView());
-            }
+            box->SetRotation(box->GetRotation() + (rotationSpeed * static_cast<float>(GameTime::GetInstance().DeltaTime())));
+            box->Render(camera.GetProjection() * camera.GetView());
         }
 
+        postProcessor.End();
         arialFont->RenderText(std::to_string(GameTime::GetInstance().Fps()), 100, 100, 0.5f, {1.0f, 1.0f, 0.0f});
 
         glfwSwapBuffers(win); // Swap the front and back buffers
@@ -174,6 +179,8 @@ void GameController::RunGame() {
     } 
     while (glfwGetKey(win, GLFW_KEY_ESCAPE) != GLFW_PRESS && // Check if the esc key was pressed
         glfwWindowShouldClose(win) == 0); // Check if the window is closed
+
+    postProcessor.Cleanup();
 
     for (auto light : lights)
     {
@@ -187,7 +194,8 @@ void GameController::RunGame() {
         delete box;
     }
     meshes.clear();
-
+    shaderPost.Cleanup();
+    shaderSkybox.Cleanup();
     shaderFont.Cleanup();
     shaderDiffuse.Cleanup();
     shaderColor.Cleanup();
