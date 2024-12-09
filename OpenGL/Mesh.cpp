@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "GameController.h"
 #include <OBJ_Loader.h>
+#include "ASEReader.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/ext.hpp>
@@ -21,6 +22,11 @@ Mesh::~Mesh()
 	textureSpecular.Cleanup();
 }
 
+bool Mesh::EndsWith(const std::string& _str, const std::string& _suffix)
+{
+    return _str.size() >= _suffix.size() && 0 == _str.compare(_str.size() - _suffix.size(), _suffix.size(), _suffix);
+}
+
 void Mesh::Create(Shader* _shader, std::string _file, int _instanceCount)
 {
     shader = _shader;
@@ -28,95 +34,19 @@ void Mesh::Create(Shader* _shader, std::string _file, int _instanceCount)
     instanceCount = _instanceCount;
     enableInstancing = instanceCount > 1 ? true : false;
 
-    #pragma region Mesh Loading
-    objl::Loader loader;
-    M_ASSERT(loader.LoadFile(_file) == true, "Failed to load mesh");
-
-    for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++)
+    if (EndsWith(_file, "ase"))
     {
-        objl::Mesh curMesh = loader.LoadedMeshes[i];
-        std::vector<objl::Vector3> tangents;
-        std::vector<objl::Vector3> bitangents;
-        std::vector<objl::Vertex> triangle;
-        objl::Vector3 tangent;
-        objl::Vector3 bitangent;
-        for (unsigned int j = 0; j < curMesh.Vertices.size(); j += 3)
-        {
-            triangle.clear();
-            triangle.push_back(curMesh.Vertices[j]);
-            triangle.push_back(curMesh.Vertices[j + 1]);
-            triangle.push_back(curMesh.Vertices[j + 2]);
-            CalculateTangents(triangle, tangent, bitangent);
-            tangents.push_back(tangent);
-            bitangents.push_back(bitangent);
-        }
-        for (unsigned int j = 0; j < curMesh.Vertices.size(); j++)
-        {
-            vertexData.push_back(curMesh.Vertices[j].Position.X);
-            vertexData.push_back(curMesh.Vertices[j].Position.Y);
-            vertexData.push_back(curMesh.Vertices[j].Position.Z);
-            vertexData.push_back(curMesh.Vertices[j].Normal.X);
-            vertexData.push_back(curMesh.Vertices[j].Normal.Y);
-            vertexData.push_back(curMesh.Vertices[j].Normal.Z);
-            vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.X);
-            vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.Y);
-
-            if (loader.LoadedMaterials[0].map_bump != "")
-            {
-                int index = j / 3;
-                vertexData.push_back(tangents[index].X);
-                vertexData.push_back(tangents[index].Y);
-                vertexData.push_back(tangents[index].Z);
-                vertexData.push_back(bitangents[index].X);
-                vertexData.push_back(bitangents[index].Y);
-                vertexData.push_back(bitangents[index].Z);
-            }
-        }
+        LoadASE(_file);
     }
-
-    std::string diffuseMap = loader.LoadedMaterials[0].map_Kd;
-    const size_t last_slash_idx = diffuseMap.find_last_of("\\/");
-    if (std::string::npos != last_slash_idx)
+    else
     {
-        diffuseMap.erase(0, last_slash_idx + 1);
+        LoadOBJ(_file);
     }
 
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-#pragma endregion
-
-    #pragma region Texture Loading
-    textureDiffuse = Texture();
-    if (loader.LoadedMaterials[0].map_Kd != "")
-    {
-        textureDiffuse.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Kd));
-    }
-    else
-    {
-        textureDiffuse.LoadTexture("../Assets/Textures/Pattern.png");
-    }
-
-    textureSpecular = Texture();
-    if (loader.LoadedMaterials[0].map_Ks != "")
-    {
-        textureSpecular.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Ks));
-    }
-
-    textureNormal = Texture();
-    if (loader.LoadedMaterials[0].map_bump != "")
-    {
-        enableNormalMaps = true;
-        textureNormal.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_bump));
-    }
-#pragma endregion
-
-    vertexStride = 8;
-    if (enableNormalMaps)
-    {
-        vertexStride += 6;
-    }
 
     if (enableInstancing)
     {
@@ -194,6 +124,151 @@ void Mesh::Render(glm::mat4 _pv)
         glDisableVertexAttribArray(shader->GetAttrInstanceMatrix() + 1);
         glDisableVertexAttribArray(shader->GetAttrInstanceMatrix() + 2);
         glDisableVertexAttribArray(shader->GetAttrInstanceMatrix() + 3);
+    }
+}
+
+void Mesh::LoadOBJ(std::string& _file)
+{
+    objl::Loader loader;
+    M_ASSERT(loader.LoadFile(_file) == true, "Failed to load mesh");
+
+    for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++)
+    {
+        objl::Mesh curMesh = loader.LoadedMeshes[i];
+        std::vector<objl::Vector3> tangents;
+        std::vector<objl::Vector3> bitangents;
+        std::vector<objl::Vertex> triangle;
+        objl::Vector3 tangent;
+        objl::Vector3 bitangent;
+        for (unsigned int j = 0; j < curMesh.Vertices.size(); j += 3)
+        {
+            triangle.clear();
+            triangle.push_back(curMesh.Vertices[j]);
+            triangle.push_back(curMesh.Vertices[j + 1]);
+            triangle.push_back(curMesh.Vertices[j + 2]);
+            CalculateTangents(triangle, tangent, bitangent);
+            tangents.push_back(tangent);
+            bitangents.push_back(bitangent);
+        }
+        for (unsigned int j = 0; j < curMesh.Vertices.size(); j++)
+        {
+            vertexData.push_back(curMesh.Vertices[j].Position.X);
+            vertexData.push_back(curMesh.Vertices[j].Position.Y);
+            vertexData.push_back(curMesh.Vertices[j].Position.Z);
+            vertexData.push_back(curMesh.Vertices[j].Normal.X);
+            vertexData.push_back(curMesh.Vertices[j].Normal.Y);
+            vertexData.push_back(curMesh.Vertices[j].Normal.Z);
+            vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.X);
+            vertexData.push_back(curMesh.Vertices[j].TextureCoordinate.Y);
+
+            if (loader.LoadedMaterials[0].map_bump != "")
+            {
+                int index = j / 3;
+                vertexData.push_back(tangents[index].X);
+                vertexData.push_back(tangents[index].Y);
+                vertexData.push_back(tangents[index].Z);
+                vertexData.push_back(bitangents[index].X);
+                vertexData.push_back(bitangents[index].Y);
+                vertexData.push_back(bitangents[index].Z);
+            }
+        }
+    }
+
+    textureDiffuse = Texture();
+    if (loader.LoadedMaterials[0].map_Kd != "")
+    {
+        textureDiffuse.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Kd));
+    }
+    else
+    {
+        textureDiffuse.LoadTexture("../Assets/Textures/Pattern.png");
+    }
+
+    textureSpecular = Texture();
+    if (loader.LoadedMaterials[0].map_Ks != "")
+    {
+        textureSpecular.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_Ks));
+    }
+
+    textureNormal = Texture();
+    if (loader.LoadedMaterials[0].map_bump != "")
+    {
+        enableNormalMaps = true;
+        textureNormal.LoadTexture("../Assets/Textures/" + RemoveFolder(loader.LoadedMaterials[0].map_bump));
+    }
+}
+
+void Mesh::LoadASE(std::string& _file)
+{
+    ASEReader reader;
+    reader.ParseASEFile(_file.c_str());
+    ASEReader::MeshInfo& m = reader.GeoObjects[0]->MeshI;
+    ASEReader::Material* mat = reader.Materials[reader.GeoObjects[0]->MaterialID];
+
+    std::vector<objl::Vector3> tangents;
+    std::vector<objl::Vector3> bitangents;
+    std::vector<objl::Vertex> triangle;
+    objl::Vector3 tangent;
+    objl::Vector3 bitangent;
+    int vCount = 0;
+    for (int count = 0; count < m.NumFaces; count++)
+    {
+        glm::vec3 tF = m.TexFaces[count];
+        glm::vec3 f = m.Faces[count];
+        triangle.clear();
+
+        objl::Vertex vert = objl::Vertex();
+        vert.Position = objl::Vector3(m.Vertices[(int)f.x].x, m.Vertices[(int)f.x].y, m.Vertices[(int)f.x].z);
+        vert.Normal = objl::Vector3(m.VertexNormals[vCount].x, m.VertexNormals[vCount].y, m.VertexNormals[vCount].z);
+        vert.TextureCoordinate = objl::Vector2(m.TexVertices[(int)tF.x].x, m.TexVertices[(int)tF.x].y);
+        triangle.push_back(vert);
+        vCount++;
+
+        CalculateTangents(triangle, tangent, bitangent);
+        tangents.push_back(tangent);
+        bitangents.push_back(bitangent);
+        
+        for (int c = 0; c < 3; c++)
+        {
+            vertexData.push_back(triangle[c].Position.X);
+            vertexData.push_back(triangle[c].Position.Y);
+            vertexData.push_back(triangle[c].Position.Z);
+            vertexData.push_back(triangle[c].Normal.X);
+            vertexData.push_back(triangle[c].Normal.Y);
+            vertexData.push_back(triangle[c].Normal.Z);
+            vertexData.push_back(triangle[c].TextureCoordinate.X);
+            vertexData.push_back(triangle[c].TextureCoordinate.Y);
+
+            int index = (vCount / 3) - 1;
+            vertexData.push_back(tangents[index].X);
+            vertexData.push_back(tangents[index].Y);
+            vertexData.push_back(tangents[index].Z);
+            vertexData.push_back(bitangents[index].X);
+            vertexData.push_back(bitangents[index].Y);
+            vertexData.push_back(bitangents[index].Z);
+        }
+    }
+
+    textureDiffuse = Texture();
+    if (mat->Maps[0].Name == "DIFFUSE")
+    {
+        textureDiffuse.LoadTexture("../Assets/Textures/" + RemoveFolder(mat->Maps[0].TextureFileName));
+    }
+    textureSpecular = Texture();
+    if (mat->Maps[1].Name == "SPECULAR")
+    {
+        textureSpecular.LoadTexture("../Assets/Textures/" + RemoveFolder(mat->Maps[1].TextureFileName));
+    }
+    textureNormal = Texture();
+    if (mat->Maps[1].Name == "BUMP")
+    {
+        textureNormal.LoadTexture("../Assets/Textures/" + RemoveFolder(mat->Maps[1].TextureFileName));
+        enableNormalMaps = true;
+    }
+    else if (mat->Maps[2].Name == "BUMP")
+    {
+        textureNormal.LoadTexture("../Assets/Textures/" + RemoveFolder(mat->Maps[2].TextureFileName));
+        enableNormalMaps = true;
     }
 }
 

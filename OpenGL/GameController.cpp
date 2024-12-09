@@ -45,12 +45,12 @@ void GameController::RunGame() {
     shaderSkybox.LoadShaders("Skybox.vertexshader", "Skybox.fragmentshader");
     shaderPost = Shader();
     shaderPost.LoadShaders("Postprocessor.vertexshader", "Postprocessor.fragmentshader");
-#pragma endregion
+    #pragma endregion
 
     #pragma region Post Processes
     postProcessor = PostProcessor();
     postProcessor.Create(&shaderPost);
-#pragma endregion
+    #pragma endregion
 
     #pragma region Light
     Mesh* light = new Mesh();
@@ -59,9 +59,18 @@ void GameController::RunGame() {
     light->SetColor({ 1.0f, 1.0f, 1.0f });
     light->SetScale({ 0.1f, 0.1f, 0.1f });
     lights.push_back(light);
-#pragma endregion
+    #pragma endregion
     
     Mesh* mesh = nullptr;
+
+    #pragma region Fighter ASE
+    mesh = new Mesh();
+    mesh->Create(&shaderDiffuse, "../Assets/Models/Fighter.ase");
+    mesh->SetCameraPosition(camera.GetPosition());
+    mesh->SetPosition({ 0.0f, 0.0f, 0.0f });
+    mesh->SetScale({ 0.002f, 0.002f, 0.002f });
+    meshes.push_back(mesh);
+    #pragma endregion
 
     #pragma region Fighter (Commented Out)
    /* mesh = new Mesh();
@@ -91,12 +100,12 @@ void GameController::RunGame() {
 #pragma endregion
 
     #pragma region Cube (Commented Out)
-        Mesh* box = new Mesh();
+   /*     Mesh* box = new Mesh();
         box->Create(&shaderDiffuse, "../Assets/Models/Cube.obj", 1000);
         box->SetCameraPosition(camera.GetPosition());
         box->SetScale({ 0.1f, 0.1f, 0.1f });
         box->SetPosition({ 0.0f, 0.0f, 0.0f });
-        meshes.push_back(box);
+        meshes.push_back(box); */
 #pragma endregion
 
     #pragma region Skybox Setup (Commented Out)
@@ -156,7 +165,7 @@ void GameController::RunGame() {
         GameTime::GetInstance().Update();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        postProcessor.Start();
+        //postProcessor.Start();
 
         for (auto light : lights)
         {
@@ -171,7 +180,7 @@ void GameController::RunGame() {
             box->Render(camera.GetProjection() * camera.GetView());
         }
 
-        postProcessor.End();
+        //postProcessor.End();
         arialFont->RenderText(std::to_string(GameTime::GetInstance().Fps()), 100, 100, 0.5f, {1.0f, 1.0f, 0.0f});
 
         glfwSwapBuffers(win); // Swap the front and back buffers

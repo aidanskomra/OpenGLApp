@@ -30,6 +30,10 @@ public:
 	void Render(glm::mat4 _pv);
 
 private:
+	void LoadOBJ(std::string& _file);
+	void LoadASE(std::string& _file);
+
+	bool EndsWith(const std::string& _str, const std::string& _suffix);
 	void SetShaderVariables(glm::mat4 _pv);
 	void BindAttributes();
 	std::string Concat(const std::string& _s1, int _index, const std::string& _s2);
