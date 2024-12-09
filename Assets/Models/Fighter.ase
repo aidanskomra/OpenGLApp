@@ -31,7 +31,7 @@
 			*MAP_CLASS "Bitmap"
 			*MAP_SUBNO 1
 			*MAP_AMOUNT 1.0000
-			*BITMAP "c:\temp\FighterDiffuse.jpg"
+			*BITMAP "C:\Users\aidan\source\repos\OpenGL\Assets\Textures\FighterDiffuse.jpg"
 			*MAP_TYPE Screen
 			*UVW_U_OFFSET -0.0000
 			*UVW_V_OFFSET -0.0000
@@ -51,7 +51,7 @@
 			*MAP_CLASS "Bitmap"
 			*MAP_SUBNO 2
 			*MAP_AMOUNT 1.0000
-			*BITMAP "c:\temp\FighterSpecular.jpg"
+			*BITMAP "C:\Users\aidan\source\repos\OpenGL\Assets\Textures\FighterSpecular.jpg"
 			*MAP_TYPE Screen
 			*UVW_U_OFFSET 0.0000
 			*UVW_V_OFFSET 0.0000
@@ -71,7 +71,7 @@
 			*MAP_CLASS "Bitmap"
 			*MAP_SUBNO 8
 			*MAP_AMOUNT 0.3000
-			*BITMAP "c:\temp\FighterNormal.jpg"
+			*BITMAP "C:\Users\aidan\source\repos\OpenGL\Assets\Textures\FighterNormal.jpg"
 			*MAP_TYPE Screen
 			*UVW_U_OFFSET -0.0000
 			*UVW_V_OFFSET -0.0000
