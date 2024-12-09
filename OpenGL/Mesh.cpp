@@ -224,6 +224,20 @@ void Mesh::LoadASE(std::string& _file)
         triangle.push_back(vert);
         vCount++;
 
+        vert = objl::Vertex();
+        vert.Position = objl::Vector3(m.Vertices[(int)f.y].x, m.Vertices[(int)f.y].y, m.Vertices[(int)f.y].z);
+        vert.Normal = objl::Vector3(m.VertexNormals[vCount].x, m.VertexNormals[vCount].y, m.VertexNormals[vCount].z);
+        vert.TextureCoordinate = objl::Vector2(m.TexVertices[(int)tF.y].x, m.TexVertices[(int)tF.y].y);
+        triangle.push_back(vert);
+        vCount++;
+
+        vert = objl::Vertex();
+        vert.Position = objl::Vector3(m.Vertices[(int)f.z].x, m.Vertices[(int)f.z].y, m.Vertices[(int)f.z].z);
+        vert.Normal = objl::Vector3(m.VertexNormals[vCount].x, m.VertexNormals[vCount].y, m.VertexNormals[vCount].z);
+        vert.TextureCoordinate = objl::Vector2(m.TexVertices[(int)tF.z].x, m.TexVertices[(int)tF.z].y);
+        triangle.push_back(vert);
+        vCount++;
+
         CalculateTangents(triangle, tangent, bitangent);
         tangents.push_back(tangent);
         bitangents.push_back(bitangent);
