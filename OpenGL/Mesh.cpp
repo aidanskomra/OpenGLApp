@@ -43,6 +43,12 @@ void Mesh::Create(Shader* _shader, std::string _file, int _instanceCount)
         LoadOBJ(_file);
     }
 
+    vertexStride = 8;
+    if (enableNormalMaps)
+    {
+        vertexStride += 6;
+    }
+
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
@@ -150,6 +156,7 @@ void Mesh::LoadOBJ(std::string& _file)
             tangents.push_back(tangent);
             bitangents.push_back(bitangent);
         }
+
         for (unsigned int j = 0; j < curMesh.Vertices.size(); j++)
         {
             vertexData.push_back(curMesh.Vertices[j].Position.X);
@@ -241,7 +248,7 @@ void Mesh::LoadASE(std::string& _file)
         CalculateTangents(triangle, tangent, bitangent);
         tangents.push_back(tangent);
         bitangents.push_back(bitangent);
-        
+
         for (int c = 0; c < 3; c++)
         {
             vertexData.push_back(triangle[c].Position.X);

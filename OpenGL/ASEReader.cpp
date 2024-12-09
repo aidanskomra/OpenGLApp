@@ -23,15 +23,15 @@ void ASEReader::ReadFile(const char* _fileName, std::vector<std::string>& _file)
 	file.close();
 }
 
-void ASEReader::ParseMaterials(std::vector<std::string>& _file) {
+void ASEReader::ParseMaterials(std::vector<std::string>& _file)
+{
 	std::vector<std::string> _materials;
-
 	GetBlock("*MATERIAL_LIST ", _file, _materials);
-	
+
 	int materialCount = std::stoi(ExtractValue(_materials, "*MATERIAL_COUNT"));
 	for (int count = 0; count < materialCount; count++)
 	{
-		std::string materialTag = std::string("*MATERIAL") + std::to_string(count);
+		std::string materialTag = std::string("*MATERIAL ") + std::to_string(count);
 		std::vector<std::string> _materialBlock;
 		GetBlock(materialTag.c_str(), _materials, _materialBlock);
 
@@ -45,7 +45,7 @@ void ASEReader::ParseMaterials(std::vector<std::string>& _file) {
 		material->SpecularColor = ParseStringToVec3(ExtractValue(_materialBlock, "*MATERIAL_SPECULAR "));
 		material->Shine = std::stof(ExtractValue(_materialBlock, "*MATERIAL_SHINE "));
 		material->ShineStrength = std::stof(ExtractValue(_materialBlock, "*MATERIAL_SHINESTRENGTH "));
-		material->Transparancy = std::stof(ExtractValue(_materialBlock, "*MATERIAL_TRANSPARENCY "));			
+		material->Transparancy = std::stof(ExtractValue(_materialBlock, "*MATERIAL_TRANSPARENCY "));
 		material->WireSize = std::stof(ExtractValue(_materialBlock, "*MATERIAL_WIRESIZE "));
 		material->Shading = ExtractValue(_materialBlock, "*MATERIAL_SHADING ");
 
@@ -57,17 +57,16 @@ void ASEReader::ParseMaterials(std::vector<std::string>& _file) {
 	}
 }
 
-
-void ASEReader::ParseGeoObjects(std::vector<std::string>& _file) {
-	
+void ASEReader::ParseGeoObjects(std::vector<std::string>& _file)
+{
 	std::vector<std::string> _geomObject;
 	int index = GetBlock("*GEOMOBJECT ", _file, _geomObject);
 
-	while (index != -1) {
-
+	while (index != -1)
+	{
 		GeoObject* g = new GeoObject();
 
-		g->Name = ExtractValue(_geomObject, "NODE_NAME ");
+		g->Name = ExtractValue(_geomObject, "*NODE_NAME ");
 		g->MaterialID = std::stoi(ExtractValue(_geomObject, "*MATERIAL_REF"));
 		g->MeshI.TimeValue = std::stoi(ExtractValue(_geomObject, "*TIMEVALUE "));
 		g->MeshI.NumVertex = std::stoi(ExtractValue(_geomObject, "*MESH_NUMVERTEX "));
@@ -114,8 +113,6 @@ void ASEReader::ParseGeoObjects(std::vector<std::string>& _file) {
 }
 
 
-
-
 std::string ASEReader::ExtractValue(std::vector<std::string>& _lines, const char* _tag)
 {
 	for (int i = 0; i < _lines.size(); i++)
@@ -126,21 +123,22 @@ std::string ASEReader::ExtractValue(std::vector<std::string>& _lines, const char
 
 			// replace all the tabs with spaces
 			std::replace(line.begin(), line.end(), '\t', ' ');
-			// remove the leading spaces
+			// Remove the leading spaces
 			line.erase(0, line.find_first_not_of(" \n\r\t"));
-			// remove the tag, we can search for the nesh whitespace
+			// remove the tag, we can search for the next whitespace
 			line.erase(0, line.find(" ") + 1);
-			// remove any quotes since they are not part of the value
+			// remove and quotes since they are not part of the value
 			line.erase(std::remove(line.begin(), line.end(), '\"'), line.end());
-			// remove the leading spaces
+			// Remove the leading spaces
 			line.erase(0, line.find_first_not_of(" \n\r\t"));
 
 			return line;
 		}
 	}
-	
+
 	return std::string();
 }
+
 
 int ASEReader::GetBlock(const char* _tag, std::vector<std::string>& _lines, std::vector<std::string>& _block, int _start)
 {
@@ -165,6 +163,7 @@ int ASEReader::GetBlock(const char* _tag, std::vector<std::string>& _lines, std:
 	}
 	return -1;
 }
+
 
 void ASEReader::FindAllTags(const char* _tag, std::vector<std::string>& _lines, std::vector<std::string>& _block)
 {
