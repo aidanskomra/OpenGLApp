@@ -60,11 +60,11 @@ void GameController::RunGame() {
 
 void GameController::SetCurrentScene(Scene* newScene) {
     if (currentScene != nullptr) {
-        currentScene->Cleanup(); // Clean up the existing scene
+        currentScene->Cleanup();
         delete currentScene;
     }
     currentScene = newScene;
-    currentScene->Initialize(); // Initialize the new scene
+    currentScene->Initialize();
 }
 
 

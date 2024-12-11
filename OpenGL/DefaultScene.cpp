@@ -1,6 +1,7 @@
 #include "DefaultScene.h"
 #include "WindowController.h"
 #include "GameTime.h"
+#include "Font.h"
 
 void DefaultScene::Initialize() {
     GLFWwindow* window = WindowController::GetInstance().getWindow();
@@ -9,6 +10,7 @@ void DefaultScene::Initialize() {
 
     shaderColor.LoadShaders("Color.vertexshader", "Color.fragmentshader");
     shaderDiffuse.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
+    shaderFont.LoadShaders("Font.vertexshader", "Font.fragmentshader");
 
     Mesh* light = new Mesh();
     light->Create(&shaderColor, "../Assets/Models/Sphere.obj");
@@ -23,6 +25,10 @@ void DefaultScene::Initialize() {
     mesh->SetRotation({ 0.0f, glm::radians(-90.0f), 0.0f });
     mesh->SetScale({ 0.002f, 0.002f, 0.002f });
     meshes.push_back(mesh);
+
+    arialFont = new Font();
+    arialFont->Create(&shaderFont, "../Assets/Fonts/arial.ttf", 100);
+
 }
 
 void DefaultScene::Update(GLFWwindow* window) {
@@ -47,6 +53,45 @@ void DefaultScene::Render() {
     for (auto mesh : meshes) {
         mesh->Render(camera.GetProjection() * camera.GetView());
     }
+
+    // Render project title
+    arialFont->RenderText("Aidan Skomra - Final Project", 10, 40, 0.3f, { 1.0f, 1.0f, 1.0f });
+
+    // Render FPS
+    arialFont->RenderText("FPS: " + std::to_string(GameTime::GetInstance().Fps()), 10, 90, 0.3f, { 1.0f, 1.0f, 1.0f });
+
+    // Render mouse position
+    double mouseX, mouseY;
+    glfwGetCursorPos(WindowController::GetInstance().getWindow(), &mouseX, &mouseY);
+    arialFont->RenderText("Mouse Pos: (" + std::to_string(mouseX) + ", " + std::to_string(mouseY) + ")",
+        10, 140, 0.3f, { 1.0f, 1.0f, 1.0f });
+
+    // Render mouse button states
+    int leftButtonState = glfwGetMouseButton(WindowController::GetInstance().getWindow(), GLFW_MOUSE_BUTTON_LEFT);
+    int middleButtonState = glfwGetMouseButton(WindowController::GetInstance().getWindow(), GLFW_MOUSE_BUTTON_MIDDLE);
+    arialFont->RenderText("Left Button: " + std::string(leftButtonState == GLFW_PRESS ? "Down" : "Up"),
+        10, 190, 0.3f, { 1.0f, 1.0f, 1.0f });
+    arialFont->RenderText("Middle Button: " + std::string(middleButtonState == GLFW_PRESS ? "Down" : "Up"),
+        10, 240, 0.3f, { 1.0f, 1.0f, 1.0f });
+
+    // Render mesh position
+    glm::vec3 position = meshes[0]->GetPosition(); // Assuming one primary mesh
+    arialFont->RenderText("Fighter Position: (" + std::to_string(position.x) + ", "
+        + std::to_string(position.y) + ", " + std::to_string(position.z) + ")",
+        10, 290, 0.3f, { 1.0f, 1.0f, 1.0f });
+
+    // Render mesh rotation
+    glm::vec3 rotation = glm::degrees(meshes[0]->GetRotation());
+    arialFont->RenderText("Fighter Rotation: (" + std::to_string(rotation.x) + ", "
+        + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + ")",
+        10, 340, 0.3f, { 1.0f, 1.0f, 1.0f });
+
+    // Render mesh scale
+    glm::vec3 scale = meshes[0]->GetScale();
+    arialFont->RenderText("Fighter Scale: (" + std::to_string(scale.x) + ", "
+        + std::to_string(scale.y) + ", " + std::to_string(scale.z) + ")",
+        10, 390, 0.3f, { 1.0f, 1.0f, 1.0f });
+
 }
 
 void DefaultScene::Cleanup() {
@@ -61,6 +106,7 @@ void DefaultScene::Cleanup() {
         delete mesh;
     }
     meshes.clear();
+
 }
 
 void DefaultScene::SetLightPosition(const glm::vec3& position) {

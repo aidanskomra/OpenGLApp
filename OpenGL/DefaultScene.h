@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "PostProcessor.h"
 #include "Skybox.h"
+#include "Font.h"
 
 class DefaultScene : public Scene {
 public:
@@ -37,6 +38,7 @@ private:
 
     PostProcessor postProcessor;
     Mesh* mesh = nullptr;
+    Font* arialFont = nullptr;
 
     bool transformActive = false;
     bool translateActive = false;
