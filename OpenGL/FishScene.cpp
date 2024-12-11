@@ -37,6 +37,9 @@ void FishScene::Update(GLFWwindow* window) {
 
 void FishScene::Render() {
     postProcessor.Start();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     for (auto mesh : meshes) {
         mesh->Render(camera.GetProjection() * camera.GetView());
     }
@@ -44,6 +47,7 @@ void FishScene::Render() {
     for (auto light : lights) {
         light->Render(camera.GetProjection() * camera.GetView());
     }
+
     postProcessor.End();
 }
 

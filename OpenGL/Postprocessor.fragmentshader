@@ -1,29 +1,23 @@
-#version 330
+#version 330 core
 
 in vec2 retTexCoords;
 out vec4 FragColor;
 
 uniform sampler2D screenTexture;
+uniform float time; // Time for sine wave
+uniform float frequency; // Frequency for sine wave
+uniform float amplitude; // Amplitude for sine wave
+uniform int tintBlue; // Blue tint toggle (0 or 1)
 
-uniform float uFrequency;  // Frequency of the sine wave
-uniform float uAmplitude;  // Amplitude of the sine wave
-uniform float uTime;       // Current time from the application
-uniform bool uTintBlue;    // Enable blue tint
+void main() {
+    vec2 distortedCoords = retTexCoords;
+    distortedCoords.y += sin(retTexCoords.x * frequency + time) * amplitude;
+    vec3 col = texture(screenTexture, distortedCoords).rgb;
 
-void main()
-{
-    // Apply sine wave distortion
-    float waveOffset = sin(retTexCoords.x * uFrequency + uTime) * uAmplitude;
-    vec2 distortedTexCoords = vec2(retTexCoords.x, retTexCoords.y + waveOffset);
-
-    // Sample the texture with distorted coordinates
-    vec4 color = texture(screenTexture, distortedTexCoords);
-
-    // Apply blue tint if enabled
-    if (uTintBlue) {
-        color.r *= 0.5;
-        color.g *= 0.5;
+    if (tintBlue == 1) {
+        col.r /= 2.0;
+        col.g /= 2.0;
     }
 
-    FragColor = color;
+    FragColor = vec4(col, 1.0);
 }
