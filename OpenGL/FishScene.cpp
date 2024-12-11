@@ -18,10 +18,10 @@ void FishScene::Initialize() {
     lights.push_back(light);
 
     fishMesh = new Mesh();
-    fishMesh->Create(&shaderDiffuse, "../Assets/Models/Fish.ase");
+    fishMesh->Create(&shaderDiffuse, "../Assets/Models/fish.ase");
     fishMesh->SetPosition({ 0.0f, 0.0f, 0.0f });
     fishMesh->SetRotation({ 0.0f, glm::radians(-90.0f), 0.0f });
-    fishMesh->SetScale({ 200.0f, 200.0f, 200.0f });
+    fishMesh->SetScale({ 1.0f, 1.0f, 1.0f });
     meshes.push_back(fishMesh);
 }
 

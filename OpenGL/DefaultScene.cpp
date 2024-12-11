@@ -18,10 +18,10 @@ void DefaultScene::Initialize() {
     lights.push_back(light);
 
     mesh = new Mesh();
-    mesh->Create(&shaderDiffuse, "../Assets/Models/fish.ase");
+    mesh->Create(&shaderDiffuse, "../Assets/Models/Fighter.ase");
     mesh->SetPosition({ 0.0f, 0.0f, 0.0f });
     mesh->SetRotation({ 0.0f, 0.0f, 0.0f });
-    mesh->SetScale({ 20.0f, 20.0f, 20.0f });
+    mesh->SetScale({ 0.002f, 0.002f, 0.002f });
     meshes.push_back(mesh);
 }
 
