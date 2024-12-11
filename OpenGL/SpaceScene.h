@@ -15,6 +15,7 @@ public:
     void Cleanup() override;
 
 private:
+    Shader shaderColor;
     Shader shaderSkybox;
     Shader shaderDiffuse;
     Skybox* skybox = nullptr;
