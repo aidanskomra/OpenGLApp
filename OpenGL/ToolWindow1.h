@@ -52,11 +52,11 @@ namespace OpenGL {
 	public: System::Windows::Forms::CheckBox^ checkBox4;
 	private: System::Windows::Forms::RadioButton^ radioButton3;
 	private: System::Windows::Forms::Label^ label10;
-	private: System::Windows::Forms::TrackBar^ trackBar5;
-	private: System::Windows::Forms::TrackBar^ trackBar6;
-	private: System::Windows::Forms::Label^ label11;
-	private: System::Windows::Forms::Label^ label12;
-	private: System::Windows::Forms::Label^ label13;
+	public: System::Windows::Forms::TrackBar^ trackBar5;
+	public: System::Windows::Forms::TrackBar^ trackBar6;
+	public: System::Windows::Forms::Label^ label11;
+	public: System::Windows::Forms::Label^ label12;
+	public: System::Windows::Forms::Label^ label13;
 	private: System::Windows::Forms::CheckBox^ checkBox5;
 	private: System::Windows::Forms::CheckBox^ checkBox6;
 	private: System::Windows::Forms::RadioButton^ radioButton4;
@@ -564,6 +564,7 @@ private: System::Void radioButton2_CheckedChanged(System::Object^ sender, System
 		GameController::GetInstance().SetCurrentScene(new DefaultScene());
 		DefaultScene* currentScene = dynamic_cast<DefaultScene*>(GameController::GetInstance().GetCurrentScene());
 		if (currentScene) {
+			currentScene->SetLightPosition({ 5.0f, 5.0f, 5.0f });
 			currentScene->SetTransformActive(radioButton2->Checked);
 		}
 }
@@ -596,12 +597,32 @@ private: System::Void radioButton3_CheckedChanged(System::Object^ sender, System
 		GameController::GetInstance().SetCurrentScene(new FishScene());
 }
 private: System::Void trackBar5_Scroll(System::Object^ sender, System::EventArgs^ e) {
+	int frequency = this->trackBar5->Value;
+	this->label12->Text = frequency.ToString();
+	FishScene* fishScene = dynamic_cast<FishScene*>(GameController::GetInstance().GetCurrentScene());
+	if (fishScene) {
+		fishScene->SetFrequency(static_cast<float>(frequency) / 10.0f);
+	}
 }
 private: System::Void trackBar6_Scroll(System::Object^ sender, System::EventArgs^ e) {
+	int amplitude = this->trackBar6->Value;
+	this->label13->Text = amplitude.ToString();
+	FishScene* fishScene = dynamic_cast<FishScene*>(GameController::GetInstance().GetCurrentScene());
+	if (fishScene) {
+		fishScene->SetAmplitude(static_cast<float>(amplitude) / 10.0f);
+	}
 }
 private: System::Void checkBox5_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	FishScene* fishScene = dynamic_cast<FishScene*>(GameController::GetInstance().GetCurrentScene());
+	if (fishScene) {
+		fishScene->SetWireframe(this->checkBox5->Checked);
+	}
 }
 private: System::Void checkBox6_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	FishScene* fishScene = dynamic_cast<FishScene*>(GameController::GetInstance().GetCurrentScene());
+	if (fishScene) {
+		fishScene->SetTintBlue(this->checkBox6->Checked);
+	}
 }
 };
 }

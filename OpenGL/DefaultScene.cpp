@@ -20,7 +20,7 @@ void DefaultScene::Initialize() {
     mesh = new Mesh();
     mesh->Create(&shaderDiffuse, "../Assets/Models/Fighter.ase");
     mesh->SetPosition({ 0.0f, 0.0f, 0.0f });
-    mesh->SetRotation({ 0.0f, 0.0f, 0.0f });
+    mesh->SetRotation({ 0.0f, glm::radians(-90.0f), 0.0f });
     mesh->SetScale({ 0.002f, 0.002f, 0.002f });
     meshes.push_back(mesh);
 }
@@ -31,6 +31,11 @@ void DefaultScene::Update(GLFWwindow* window) {
     }
     else if (moveLightActive && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         HandleMouseClick(window);
+    }
+    
+    glm::vec3 rotationSpeed = { -1.0f, 0.0f, 0.0f };
+    for (auto box : meshes) {
+        box->SetRotation(box->GetRotation() + (rotationSpeed * static_cast<float>(GameTime::GetInstance().DeltaTime())));
     }
 }
 
@@ -56,6 +61,12 @@ void DefaultScene::Cleanup() {
         delete mesh;
     }
     meshes.clear();
+}
+
+void DefaultScene::SetLightPosition(const glm::vec3& position) {
+    if (!lights.empty()) {
+        lights[0]->SetPosition(position);
+    }
 }
 
 void DefaultScene::ResetTransform() {

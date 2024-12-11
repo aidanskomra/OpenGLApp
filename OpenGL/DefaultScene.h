@@ -26,6 +26,7 @@ public:
     void ResetLightPosition() { lights[0]->SetPosition(initialLightPosition); }
     void SetMoveLightActive(bool isActive) { moveLightActive = isActive; }
 
+    void SetLightPosition(const glm::vec3& position);
 
 private:
     Shader shaderColor;
