@@ -19,7 +19,7 @@ public:
 private:
 	//Members
 	GLFWwindow* window;
-	Resolution resolution = { 1280, 768 };
+	Resolution resolution = { 1920, 1080 };
 };
 
 #endif

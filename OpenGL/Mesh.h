@@ -18,7 +18,11 @@ public:
 	void SetRotation(glm::vec3 _rotation) { rotation = _rotation; }
 	glm::vec3 GetRotation() { return rotation; }
 	void SetScale(glm::vec3 _scale) { scale = _scale; }
+	glm::vec3 GetScale() const { return scale; }
 	void SetColor(glm::vec3 _color) { color = _color; }
+	void SetSpecularColor(glm::vec3 _specularColor) { specularColor = _specularColor; }
+	glm::vec3 GetSpecularColor() const { return specularColor; }
+
 	glm::vec3 GetColor() { return color; }
 	void SetLightDirection(glm::vec3 _lightDirection) { lightDirection = _lightDirection; }
 	glm::vec3 GetLightDirection() { return lightDirection; }
@@ -62,6 +66,7 @@ private:
 	glm::vec3 rotation{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 scale { 1.0f, 1.0f, 1.0f };
 	glm::vec3 color{ 1.0f, 1.0f, 1.0f };
+	glm::vec3 specularColor{ 1.0f, 1.0f, 1.0f };
 
 	glm::vec3 lightDirection{ 0.0f, 0.0f, 0.0f };
 

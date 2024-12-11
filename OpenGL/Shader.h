@@ -45,6 +45,7 @@ public:
 	GLuint attrBitangents = 0; // Handle for the attribute Bitangents
 	GLuint attrTexCoords = 0; // Handle for the attribute Tex Coords
 	GLuint attrNormals = 0; // Handle for the attribute Normal
+	GLint specularStrengthLocation;
 	GLuint attrWVP = 0;
 	GLuint attrInstanceMatrix = 0;
 	GLint result = GL_FALSE;

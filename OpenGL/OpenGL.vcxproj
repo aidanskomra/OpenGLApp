@@ -137,6 +137,8 @@ copy /Y "$(SolutionDir)\External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"
   <ItemGroup>
     <ClCompile Include="ASEReader.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DefaultScene.cpp" />
+    <ClCompile Include="FishScene.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameTIme.cpp" />
@@ -152,12 +154,15 @@ copy /Y "$(SolutionDir)\External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"
   <ItemGroup>
     <ClInclude Include="ASEReader.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DefaultScene.h" />
+    <ClInclude Include="FishScene.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GameTIme.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="Resolution.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Skybox.h" />

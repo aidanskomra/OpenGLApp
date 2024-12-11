@@ -2,37 +2,22 @@
 #define GAME_CONTROLLER_H
 
 #include "StandardIncludes.h"
-#include "Shader.h"
-#include "Mesh.h"
-#include "Camera.h"
-#include "Skybox.h"
-#include "PostProcessor.h"
+#include "Scene.h"
 
-class GameController : public Singleton<GameController>
-{
+class GameController : public Singleton<GameController> {
 public:
-	GameController() = default;
-	virtual ~GameController() = default;
+    GameController() = default;
+    virtual ~GameController();
 
-	void Initialize();
-	void RunGame();
-	std::vector<Mesh*>& GetLights() { return lights; }
-	const Camera& GetCamera() { return camera; }
-
+    void Initialize();
+    void RunGame();
+    void SetCurrentScene(Scene* newScene);
+    Scene* GetCurrentScene() const { return currentScene; }
 private:
-	Camera camera = {};
-	PostProcessor postProcessor = {};
+    Scene* currentScene = nullptr;
+    GLuint vao;
 
-	Shader shaderColor = {};
-	Shader shaderDiffuse = {};
-	Shader shaderFont = {};
-	Shader shaderSkybox = {};
-	Shader shaderPost = {};
-
-	std::vector<Mesh*> meshes;
-	std::vector<Mesh*> lights;
-	Skybox* skybox = nullptr;
-
-	GLuint vao;
+    void CleanupCurrentScene();
 };
-#endif
+
+#endif // GAME_CONTROLLER_H

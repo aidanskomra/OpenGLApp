@@ -31,7 +31,7 @@
 			*MAP_CLASS "Bitmap"                       
 			*MAP_SUBNO 1                       
 			*MAP_AMOUNT  1.0000                       
-			*BITMAP "C:\Users\willi\Downloads\FishDiffuse.jpg"                       
+			*BITMAP "C:\Users\aidan\source\repos\OpenGL\Assets\Textures\FishDiffuse.jpg"                       
 			*MAP_TYPE Screen                       
 			*UVW_U_OFFSET  0.0000                       
 			*UVW_V_OFFSET  0.0000                       
@@ -51,7 +51,7 @@
 			*MAP_CLASS "Bitmap"
 			*MAP_SUBNO 2
 			*MAP_AMOUNT 1.0000
-			*BITMAP "D:\Workspace-Sheridan\Courses\PROG31068\Source Code\Final Project\Assets\Textures\FishSpecular.jpg"
+			*BITMAP "C:\Users\aidan\source\repos\OpenGL\Assets\Textures\FishSpecular.jpg"
 			*MAP_TYPE Screen
 			*UVW_U_OFFSET 0.0000
 			*UVW_V_OFFSET 0.0000
@@ -71,7 +71,7 @@
 			*MAP_CLASS "Bitmap"
 			*MAP_SUBNO 8
 			*MAP_AMOUNT 0.3000
-			*BITMAP "D:\Workspace-Sheridan\Courses\PROG31068\Source Code\Final Project\Assets\Textures\FishNormal.jpg"
+			*BITMAP "C:\Users\aidan\source\repos\OpenGL\Assets\Textures\FishNormal.jpg"
 			*MAP_TYPE Screen
 			*UVW_U_OFFSET -0.0000
 			*UVW_V_OFFSET -0.0000
