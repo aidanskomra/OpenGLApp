@@ -147,6 +147,7 @@ copy /Y "$(SolutionDir)\External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SpaceScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ToolWindow1.cpp" />
     <ClCompile Include="WindowController.cpp" />
@@ -166,6 +167,7 @@ copy /Y "$(SolutionDir)\External\glfw-3.3.4\lib-vc2019\glfw3.dll" "$(TargetDir)"
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SpaceScene.h" />
     <ClInclude Include="StandardIncludes.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ToolWindow1.h">

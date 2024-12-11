@@ -5,6 +5,7 @@
 #include "DefaultScene.h"
 #include "FishScene.h"
 #include "Scene.h"
+#include "SpaceScene.h"
 
 namespace OpenGL {
 
@@ -453,6 +454,7 @@ namespace OpenGL {
 			this->radioButton4->TabIndex = 42;
 			this->radioButton4->Text = L"Space Scene";
 			this->radioButton4->UseVisualStyleBackColor = true;
+			this->radioButton4->CheckedChanged += gcnew System::EventHandler(this, &ToolWindow1::radioButton4_CheckedChanged);
 			// 
 			// ToolWindow1
 			// 
@@ -623,6 +625,9 @@ private: System::Void checkBox6_CheckedChanged(System::Object^ sender, System::E
 	if (fishScene) {
 		fishScene->SetTintBlue(this->checkBox6->Checked);
 	}
+}
+private: System::Void radioButton4_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	GameController::GetInstance().SetCurrentScene(new SpaceScene());
 }
 };
 }
