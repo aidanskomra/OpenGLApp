@@ -5,17 +5,14 @@
 #include <glm/gtc/random.hpp>
 
 void SpaceScene::Initialize() {
-    // Setup camera
     GLFWwindow* window = WindowController::GetInstance().getWindow();
     camera = Camera(WindowController::GetInstance().GetResolution());
     camera.LookAt({ 0.0f, 0.0f, 10.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f });
 
-    // Load shaders
     shaderColor.LoadShaders("Color.vertexshader", "Color.fragmentshader");
     shaderSkybox.LoadShaders("Skybox.vertexshader", "Skybox.fragmentshader");
     shaderDiffuse.LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
 
-    // Load the skybox
     skybox = new Skybox();
     skybox->Create(&shaderSkybox, "../Assets/Models/SkyBox.obj", {
         "../Assets/Textures/Skybox/right.png",
@@ -26,7 +23,6 @@ void SpaceScene::Initialize() {
         "../Assets/Textures/Skybox/back.png"
         });
 
-    // Load the spaceship
     spaceship = new Mesh();
     spaceship->Create(&shaderDiffuse, "../Assets/Models/Fighter.ase");
     spaceship->SetPosition({ 0.0f, 0.0f, 0.0f });
@@ -34,13 +30,19 @@ void SpaceScene::Initialize() {
     spaceship->SetScale({ 0.002f, 0.002f, 0.002f });
     meshes.push_back(spaceship);
 
-    // Create 100 fish with random attributes
+    Mesh* light = new Mesh();
+    light->Create(&shaderColor, "../Assets/Models/Sphere.obj");
+    light->SetPosition({ 3.0f, 0.0f, 0.0f });
+    light->SetColor({ 1.0f, 1.0f, 1.0f });
+    light->SetSpecularStrength(0.5f);
+    light->SetScale({ 0.1f, 0.1f, 0.1f });
+    lights.push_back(light);
+
     srand(static_cast<unsigned int>(time(0)));
     for (int i = 0; i < 100; i++) {
         Mesh* fish = new Mesh();
         fish->Create(&shaderDiffuse, "../Assets/Models/fish.ase");
 
-        // Randomize position, rotation, and scale
         glm::vec3 randomPosition = glm::linearRand(glm::vec3(-10.0f), glm::vec3(10.0f));
         glm::vec3 randomRotation = glm::radians(glm::linearRand(glm::vec3(0.0f), glm::vec3(360.0f)));
         glm::vec3 randomScale = glm::vec3(glm::linearRand(0.01f, 0.05f));
@@ -60,7 +62,6 @@ void SpaceScene::Update(GLFWwindow* window) {
 
     for (auto mesh : meshes) {
         if (mesh != spaceship) {
-            // Rotate only the fish
             mesh->SetRotation(mesh->GetRotation() + rotationSpeed * static_cast<float>(GameTime::GetInstance().DeltaTime()));
         }
     }
@@ -69,13 +70,10 @@ void SpaceScene::Update(GLFWwindow* window) {
 void SpaceScene::Render() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    // Use the camera's projection and view (remove translation for the skybox)
     glm::mat4 view = glm::mat4(glm::mat3(camera.GetView()));
 
-    // Render the skybox
     skybox->Render(camera.GetProjection() * view);
 
-    // Render meshes (spaceship and fish)
     for (auto mesh : meshes) {
         mesh->Render(camera.GetProjection() * camera.GetView());
     }
@@ -93,4 +91,10 @@ void SpaceScene::Cleanup() {
         delete mesh;
     }
     meshes.clear();
+
+    for (auto light : lights) {
+        light->Cleanup();
+        delete light;
+    }
+    lights.clear();
 }

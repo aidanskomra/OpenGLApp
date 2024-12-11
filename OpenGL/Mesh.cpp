@@ -321,7 +321,7 @@ void Mesh::SetShaderVariables(glm::mat4 _pv)
             shader->SetFloat(Concat("light[", i, "].falloff").c_str(), 200);
         }
 
-        shader->SetFloat("material.specularStrength", 20);
+        shader->SetFloat("material.specularStrength", specularStrength);
         shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, textureDiffuse.GetTexture());
         shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, textureSpecular.GetTexture());
         shader->SetTextureSampler("material.normalTexture", GL_TEXTURE2, 2, textureNormal.GetTexture());

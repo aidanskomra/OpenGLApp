@@ -16,6 +16,7 @@ void DefaultScene::Initialize() {
     light->Create(&shaderColor, "../Assets/Models/Sphere.obj");
     light->SetPosition({ 3.0f, 0.0f, 0.0f });
     light->SetColor({ 1.0f, 1.0f, 1.0f });
+    light->SetSpecularStrength(0.5f);
     light->SetScale({ 0.1f, 0.1f, 0.1f });
     lights.push_back(light);
 
@@ -54,19 +55,18 @@ void DefaultScene::Render() {
         mesh->Render(camera.GetProjection() * camera.GetView());
     }
 
-    // Render project title
+
     arialFont->RenderText("Aidan Skomra - Final Project", 10, 40, 0.3f, { 1.0f, 1.0f, 1.0f });
 
-    // Render FPS
+
     arialFont->RenderText("FPS: " + std::to_string(GameTime::GetInstance().Fps()), 10, 90, 0.3f, { 1.0f, 1.0f, 1.0f });
 
-    // Render mouse position
+
     double mouseX, mouseY;
     glfwGetCursorPos(WindowController::GetInstance().getWindow(), &mouseX, &mouseY);
     arialFont->RenderText("Mouse Pos: (" + std::to_string(mouseX) + ", " + std::to_string(mouseY) + ")",
         10, 140, 0.3f, { 1.0f, 1.0f, 1.0f });
 
-    // Render mouse button states
     int leftButtonState = glfwGetMouseButton(WindowController::GetInstance().getWindow(), GLFW_MOUSE_BUTTON_LEFT);
     int middleButtonState = glfwGetMouseButton(WindowController::GetInstance().getWindow(), GLFW_MOUSE_BUTTON_MIDDLE);
     arialFont->RenderText("Left Button: " + std::string(leftButtonState == GLFW_PRESS ? "Down" : "Up"),
@@ -74,19 +74,16 @@ void DefaultScene::Render() {
     arialFont->RenderText("Middle Button: " + std::string(middleButtonState == GLFW_PRESS ? "Down" : "Up"),
         10, 240, 0.3f, { 1.0f, 1.0f, 1.0f });
 
-    // Render mesh position
-    glm::vec3 position = meshes[0]->GetPosition(); // Assuming one primary mesh
+    glm::vec3 position = meshes[0]->GetPosition();
     arialFont->RenderText("Fighter Position: (" + std::to_string(position.x) + ", "
         + std::to_string(position.y) + ", " + std::to_string(position.z) + ")",
         10, 290, 0.3f, { 1.0f, 1.0f, 1.0f });
 
-    // Render mesh rotation
     glm::vec3 rotation = glm::degrees(meshes[0]->GetRotation());
     arialFont->RenderText("Fighter Rotation: (" + std::to_string(rotation.x) + ", "
         + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + ")",
         10, 340, 0.3f, { 1.0f, 1.0f, 1.0f });
 
-    // Render mesh scale
     glm::vec3 scale = meshes[0]->GetScale();
     arialFont->RenderText("Fighter Scale: (" + std::to_string(scale.x) + ", "
         + std::to_string(scale.y) + ", " + std::to_string(scale.z) + ")",

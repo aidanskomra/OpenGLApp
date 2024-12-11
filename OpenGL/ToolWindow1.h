@@ -511,10 +511,12 @@ namespace OpenGL {
 private: 
 	
 private: System::Void trackBar1_Scroll(System::Object^ sender, System::EventArgs^ e) {
-	// Assuming trackBar1 is for specular strength
-	float specularStrength = static_cast<float>(trackBar1->Value); // Convert slider value
-	shader->SetFloat("material.specularStrength", specularStrength);
-	sStrength->Text = specularStrength.ToString("F2"); // Update UI label
+	Scene* currentScene = GameController::GetInstance().GetCurrentScene();
+	if (currentScene && !currentScene->GetLights().empty()) {
+		float newStrength = static_cast<float>(this->trackBar1->Value) / 10.0f;
+		currentScene->GetLights()[0]->SetSpecularColor(glm::vec3(newStrength));
+		this->sStrength->Text = newStrength.ToString("F1");
+	}
 }
 
 private: System::Void trackBar2_Scroll(System::Object^ sender, System::EventArgs^ e) {

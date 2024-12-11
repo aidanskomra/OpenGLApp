@@ -22,6 +22,9 @@ public:
 	void SetColor(glm::vec3 _color) { color = _color; }
 	void SetSpecularColor(glm::vec3 _specularColor) { specularColor = _specularColor; }
 	glm::vec3 GetSpecularColor() const { return specularColor; }
+	void SetSpecularStrength(float strength) { specularStrength = strength; }
+	float GetSpecularStrength() const { return specularStrength; }
+
 
 	glm::vec3 GetColor() { return color; }
 	void SetLightDirection(glm::vec3 _lightDirection) { lightDirection = _lightDirection; }
@@ -67,7 +70,7 @@ private:
 	glm::vec3 scale { 1.0f, 1.0f, 1.0f };
 	glm::vec3 color{ 1.0f, 1.0f, 1.0f };
 	glm::vec3 specularColor{ 1.0f, 1.0f, 1.0f };
-
+	float specularStrength = 1.0f;
 	glm::vec3 lightDirection{ 0.0f, 0.0f, 0.0f };
 
 	glm::vec3 cameraPosition{ 0.0f, 0.0f, 0.0f };
