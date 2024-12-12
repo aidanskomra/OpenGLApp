@@ -26,7 +26,7 @@ void SpaceScene::Initialize() {
     spaceship = new Mesh();
     spaceship->Create(&shaderDiffuse, "../Assets/Models/Fighter.ase");
     spaceship->SetPosition({ 0.0f, 0.0f, 0.0f });
-    spaceship->SetRotation({ 0.0f, glm::radians(-90.0f), 0.0f });
+    spaceship->SetRotation({ 0.0f, 0.0f, 0.0f });
     spaceship->SetScale({ 0.002f, 0.002f, 0.002f });
     meshes.push_back(spaceship);
 
@@ -38,33 +38,17 @@ void SpaceScene::Initialize() {
     light->SetScale({ 0.1f, 0.1f, 0.1f });
     lights.push_back(light);
 
-    srand(static_cast<unsigned int>(time(0)));
         Mesh* fish = new Mesh();
         fish->Create(&shaderDiffuse, "../Assets/Models/fish.ase", 100);
-
-        for (int i = 0; i < 100; i++) {
-        glm::vec3 randomPosition = glm::linearRand(glm::vec3(0.0f), glm::vec3(20.0f));
-        glm::vec3 randomRotation = glm::radians(glm::linearRand(glm::vec3(0.0f), glm::vec3(360.0f)));
-        glm::vec3 randomScale = glm::vec3(glm::linearRand(0.01f, 0.05f));
-
-        fish->SetPosition(randomPosition);
-        fish->SetRotation(randomRotation);
-        fish->SetScale(randomScale);
-
         meshes.push_back(fish);
-    }
 }
 
 void SpaceScene::Update(GLFWwindow* window) {
     camera.Rotate();
 
-    glm::vec3 rotationSpeed = { 0.0f, 0.1f, 0.0f };
+    glm::vec3 rotationSpeed = { 1.0f, 0.0f, 0.0f };
 
-    for (auto mesh : meshes) {
-        if (mesh != spaceship) {
-            mesh->SetRotation(mesh->GetRotation() + rotationSpeed * static_cast<float>(GameTime::GetInstance().DeltaTime()));
-        }
-    }
+    spaceship->SetRotation(spaceship->GetRotation() + (rotationSpeed * static_cast<float>(GameTime::GetInstance().DeltaTime())));
 }
 
 void SpaceScene::Render() {

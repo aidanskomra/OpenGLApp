@@ -63,8 +63,19 @@ void Mesh::Create(Shader* _shader, std::string _file, int _instanceCount)
         for (unsigned int i = 0; i < instanceCount; i++)
         {
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(-20 + +rand() % 40, -10 + rand() % 20, -10 + rand() % 20));
-            //model = glm::mat4(1.0f)
+
+            model = glm::translate(model, glm::vec3(
+                -100.0f + rand() % 200,
+                -50.0f + rand() % 100,
+                -100.0f + rand() % 200));
+
+            model = glm::rotate(model, glm::radians(static_cast<float>(rand() % 360)), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(static_cast<float>(rand() % 360)), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(static_cast<float>(rand() % 360)), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            float randomScale = 0.5f + static_cast<float>(rand() % 150) / 100.0f;
+            model = glm::scale(model, glm::vec3(randomScale));
+
             for (int x = 0; x < 4; x++)
             {
                 for (int y = 0; y < 4; y++)

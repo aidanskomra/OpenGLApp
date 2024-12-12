@@ -142,22 +142,22 @@ void DefaultScene::HandleTransform(GLFWwindow* window) {
     if (leftMousePressed) {
         if (translateActive) {
             glm::vec3 position = mesh->GetPosition();
-            position.x += static_cast<float>(deltaX * 9.0f * deltaTime);
-            position.y -= static_cast<float>(deltaY * 9.0f * deltaTime);
+            position.y += static_cast<float>(deltaX * 3.0f * deltaTime);
+            position.z -= static_cast<float>(deltaY * 3.0f * deltaTime);
             mesh->SetPosition(position);
         }
 
         if (rotateActive) {
             glm::vec3 rotation = mesh->GetRotation();
-            rotation.x += static_cast<float>(deltaY * 0.9f * deltaTime);
-            rotation.y += static_cast<float>(deltaX * 0.9f * deltaTime);
+            rotation.y += static_cast<float>(deltaY * 0.9f * deltaTime);
+            rotation.z += static_cast<float>(deltaX * 0.9f * deltaTime);
             mesh->SetRotation(rotation);
         }
 
         if (scaleActive) {
             glm::vec3 scale = mesh->GetScale();
-            scale.x += static_cast<float>(deltaX * 0.003f * deltaTime);
-            scale.y += static_cast<float>(deltaY * 0.003f * deltaTime);
+            scale.y += static_cast<float>(deltaX * 0.003f * deltaTime);
+            scale.z += static_cast<float>(deltaY * 0.003f * deltaTime);
             scale = glm::clamp(scale, glm::vec3(0.0001f), glm::vec3(0.05f));
             mesh->SetScale(scale);
         }
@@ -166,19 +166,19 @@ void DefaultScene::HandleTransform(GLFWwindow* window) {
     if (middleMousePressed) {
         if (translateActive) {
             glm::vec3 position = mesh->GetPosition();
-            position.z += static_cast<float>(deltaY * 9.0f * deltaTime);
+            position.x += static_cast<float>(deltaY * 9.0f * deltaTime);
             mesh->SetPosition(position);
         }
 
         if (rotateActive) {
             glm::vec3 rotation = mesh->GetRotation();
-            rotation.z += static_cast<float>(deltaY * 0.9f * deltaTime);
+            rotation.x += static_cast<float>(deltaY * 0.9f * deltaTime);
             mesh->SetRotation(rotation);
         }
 
         if (scaleActive) {
             glm::vec3 scale = mesh->GetScale();
-            scale.z += static_cast<float>(deltaY * 0.001f * deltaTime);
+            scale.x += static_cast<float>(deltaY * 0.001f * deltaTime);
             scale = glm::clamp(scale, glm::vec3(0.0001f), glm::vec3(0.05f));
             mesh->SetScale(scale);
         }
@@ -198,7 +198,7 @@ void DefaultScene::HandleMouseClick(GLFWwindow* window) {
     float deltaY = static_cast<float>(resolution.height / 2 - mouseY);
     glm::vec3 movementDirection(-deltaX / resolution.width, deltaY / resolution.height, 0.0f);
 
-    float speed = 0.005f;
+    float speed = 0.01f;
 
     Mesh* light = lights[0];
     glm::vec3 currentPosition = light->GetPosition();
@@ -211,6 +211,4 @@ void DefaultScene::HandleMouseClick(GLFWwindow* window) {
 
 
     light->SetPosition(newPosition);
-
-    std::cout << "Updated Light Position: " << newPosition.x << ", " << newPosition.y << ", " << newPosition.z << std::endl;
 }
