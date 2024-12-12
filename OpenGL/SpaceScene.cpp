@@ -43,7 +43,7 @@ void SpaceScene::Initialize() {
         Mesh* fish = new Mesh();
         fish->Create(&shaderDiffuse, "../Assets/Models/fish.ase");
 
-        glm::vec3 randomPosition = glm::linearRand(glm::vec3(-10.0f), glm::vec3(10.0f));
+        glm::vec3 randomPosition = glm::linearRand(glm::vec3(0.0f), glm::vec3(20.0f));
         glm::vec3 randomRotation = glm::radians(glm::linearRand(glm::vec3(0.0f), glm::vec3(360.0f)));
         glm::vec3 randomScale = glm::vec3(glm::linearRand(0.01f, 0.05f));
 
